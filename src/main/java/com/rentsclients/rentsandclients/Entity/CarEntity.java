@@ -4,27 +4,28 @@ import jakarta.persistence.*;
 
 
 @Entity
+@Table(name = "CarTest")
 public class CarEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ID;
+    private Long carID;
     private String brand;
     private String model;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String plate;
 
     public CarEntity(){
 
     }
-    public CarEntity(Long ID, String brand, String model, String plate) {
-        this.ID = ID;
+    public CarEntity(Long carID, String brand, String model, String plate) {
+        this.carID = carID;
         this.brand = brand;
         this.model = model;
         this.plate = plate;
     }
 
     public long getID() {
-        return ID;
+        return carID;
     }
 
     public String getBrand() {
@@ -39,9 +40,6 @@ public class CarEntity {
         return plate;
     }
 
-    public void setID(long ID) {
-        this.ID = ID;
-    }
 
     public void setBrand(String brand) {
         this.brand = brand;

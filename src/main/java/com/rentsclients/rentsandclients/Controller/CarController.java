@@ -1,10 +1,8 @@
 package com.rentsclients.rentsandclients.Controller;
 
 import com.rentsclients.rentsandclients.Entity.CarEntity;
-import com.rentsclients.rentsandclients.Repository.RentsAndClientsRepository;
-import org.springframework.http.HttpStatus;
+import com.rentsclients.rentsandclients.Repository.CarRepository;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,9 +11,9 @@ import java.util.Optional;
 @RequestMapping("/car")
 public class CarController {
 
-    private final RentsAndClientsRepository repository;
+    private final CarRepository repository;
 
-    public CarController(RentsAndClientsRepository repository) {
+    public CarController(CarRepository repository) {
         this.repository = repository;
     }
 
