@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class CarEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long ID;
+    private Long ID;
     private String brand;
     private String model;
     @Column(unique = true)
@@ -16,7 +16,7 @@ public class CarEntity {
     public CarEntity(){
 
     }
-    public CarEntity(long ID, String brand, String model, String plate) {
+    public CarEntity(Long ID, String brand, String model, String plate) {
         this.ID = ID;
         this.brand = brand;
         this.model = model;
@@ -37,5 +37,21 @@ public class CarEntity {
 
     public String getPlate() {
         return plate;
+    }
+
+    public void setID(long ID) {
+        this.ID = ID;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public void setPlate(String plate) {
+        this.plate = plate;
     }
 }

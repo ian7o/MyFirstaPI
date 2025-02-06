@@ -2,9 +2,12 @@ package com.rentsclients.rentsandclients.Controller;
 
 import com.rentsclients.rentsandclients.Entity.CarEntity;
 import com.rentsclients.rentsandclients.Repository.RentsAndClientsRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/car")
@@ -27,4 +30,26 @@ public class CarController {
         return repository.findAll();
     }
 
+    @PutMapping("/{id}")
+    public CarEntity updateCarByID(@PathVariable("id") Long id, @RequestBody CarEntity carEntity){
+        Optional<CarEntity> findCar = repository.findById(id);
+        if (findCar.isPresent()){
+            CarEntity carToUpdate = findCar.get();
+            carToUpdate.setBrand(carEntity.getBrand());
+            carToUpdate.setModel(carEntity.getModel());
+            carToUpdate.setPlate(carEntity.getPlate());
+
+            return repository.save(findCar.get());
+        }
+        return null;
+    }
+    @DeleteMapping("/{id}")
+    public void deleteASpecifiqueCarID(@PathVariable("id") Long id){
+        repository.deleteById(id);
+    }
+
+    @GetMapping("/{id}")
+    public CarEntity getASpecifiqueID(@PathVariable("id") Long id){
+      return  repository.findById(id).orElse(null);
+    }
 }
