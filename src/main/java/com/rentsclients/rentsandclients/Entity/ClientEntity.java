@@ -22,7 +22,7 @@ public class ClientEntity {
     private int nif;
     //para ajudar caso tenha contas que precisam de verificação por exemplo apenas ativar a conta caso o nif seja valido
     //o Objeto em si suporta ser vazio
-    private Boolean accountIsActivated;
+    private String accountIsActivated;
 
     public Long getClientID() {
         return clientID;
@@ -56,11 +56,11 @@ public class ClientEntity {
         this.nif = nif;
     }
 
-    public Boolean getAccountIsActivated() {
+    public String getAccountIsActivated() {
         return accountIsActivated;
     }
 
-    public void setAccountIsActivated(Boolean accountIsActivated) {
+    public void setAccountIsActivated(String accountIsActivated) {
         this.accountIsActivated = accountIsActivated;
     }
 }

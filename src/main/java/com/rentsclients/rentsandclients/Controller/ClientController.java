@@ -45,6 +45,39 @@ public class ClientController {
     public void deleteASpecifiqueClientID(@PathVariable("id") Long id){
         repository.deleteById(id);
     }
+
+        @GetMapping("/getDeactivatedAccounts/{id}")
+    public String getDeactivatedAccounts(@PathVariable("accountIsActivated") Long id) {
+        Optional<ClientEntity> findName = repository.findById(id);
+        if (findName.isPresent()){
+            return findName.get().getFirstName();
+        }
+        return null;
+    }
+
+    @PutMapping("updateClientFirstNameAndLastName/{id}")
+    public ClientEntity updateClientFirstNameAndLastName(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
+        Optional<ClientEntity> findClient = repository.findById(id);
+        if (findClient.isPresent()){
+            ClientEntity clientToUpDate = findClient.get();
+            clientToUpDate.setFirstName(clientEntity.getFirstName());
+            clientToUpDate.setLastName(clientEntity.getLastName());
+            return repository.save(findClient.get());
+        }
+        return null;
+    }
+
+    @PutMapping("/activeOrDesativeClient/{id}")
+    public ClientEntity activeOrDesativeCLientByID(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
+        Optional<ClientEntity> findClient = repository.findById(id);
+        if (findClient.isPresent()){
+            ClientEntity clientToUpDate = findClient.get();
+            clientToUpDate.setAccountIsActivated(clientEntity.getAccountIsActivated());
+            return repository.save(findClient.get());
+        }
+        return null;
+    }
+
     @GetMapping("/{id}")
     public ClientEntity getASpecifiqueClientID(@PathVariable("id") Long id){
         return repository.findById(id).orElse(null);
