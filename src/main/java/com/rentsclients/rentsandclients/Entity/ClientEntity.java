@@ -1,17 +1,10 @@
 package com.rentsclients.rentsandclients.Entity;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 
 @Entity
 @Table(name = "ClientTest")
 public class ClientEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long clientID;
@@ -20,8 +13,6 @@ public class ClientEntity {
     //pois o nif é obrigatorio
     @Column(unique = true, nullable = false)
     private int nif;
-    //para ajudar caso tenha contas que precisam de verificação por exemplo apenas ativar a conta caso o nif seja valido
-    //o Objeto em si suporta ser vazio
     private String accountIsActivated;
 
     public Long getClientID() {
