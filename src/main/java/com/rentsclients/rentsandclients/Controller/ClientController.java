@@ -10,6 +10,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/client")
 public class ClientController {
+
     private final ClientRepository repository;
 
     public ClientController(ClientRepository repository) {
@@ -26,7 +27,7 @@ public class ClientController {
         return repository.findAll();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/updateAllClientInfos/{id}")
     public ClientEntity updateClientByID(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
         Optional<ClientEntity> findClient = repository.findById(id);
         if (findClient.isPresent()) {
@@ -45,12 +46,15 @@ public class ClientController {
         repository.deleteById(id);
     }
 
-    @GetMapping("/getDeactivatedAccounts/{accountIsActivated}")
+    @GetMapping("/deactivatedAccounts/{accountIsActivated}")
     public String getDeactivatedAccounts(@PathVariable("accountIsActivated") String accountIsActivated) {
-        Optional<ClientEntity> findFirstAndLastNames = repository.findByaccountIsActivated(accountIsActivated);
-        if (findFirstAndLastNames.isPresent()) {
-
-            return findFirstAndLastNames.get().getFirstName() + " " + findFirstAndLastNames.get().getLastName();
+        List<ClientEntity> findd = repository.findByaccountIsActivated(accountIsActivated);
+        if (!findd.isEmpty()) {
+            String firstsAndLastsNames = " ";
+            for (int i = 0; i < findd.size(); i++) {
+                firstsAndLastsNames += findd.get(i).getFirstName() + " " + findd.get(i).getLastName() + ", ";
+            }
+            return firstsAndLastsNames;
         }
         return "not find";
     }

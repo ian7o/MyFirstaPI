@@ -36,11 +36,24 @@ public class CarController {
             carToUpdate.setBrand(carEntity.getBrand());
             carToUpdate.setModel(carEntity.getModel());
             carToUpdate.setPlate(carEntity.getPlate());
+            carToUpdate.setCarIsActivated(carEntity.getCarIsActivated());
 
             return repository.save(findCar.get());
         }
         return null;
     }
+
+    @PutMapping("/activeOrDesativeCar/{id}")
+    public CarEntity activeOrDesativeCarrByID(@PathVariable("id") long id, @RequestBody CarEntity carEntity) {
+        Optional<CarEntity> findCar = repository.findById(id);
+        if (findCar.isPresent()) {
+            CarEntity carToUpdate = findCar.get();
+            carToUpdate.setCarIsActivated(carEntity.getCarIsActivated());
+            return repository.save(findCar.get());
+        }
+        return null;
+    }
+
     @DeleteMapping("/{id}")
     public void deleteASpecifiqueCarID(@PathVariable("id") Long id){
         repository.deleteById(id);

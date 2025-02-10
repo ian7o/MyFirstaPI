@@ -15,6 +15,17 @@ public class ClientEntity {
     private int nif;
     private String accountIsActivated;
 
+    public ClientEntity() {
+    }
+
+    public ClientEntity(Long clientID, String firstName, String lastName, int nif, String accountIsActivated) {
+        this.clientID = clientID;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.nif = nif;
+        this.accountIsActivated = accountIsActivated;
+    }
+
     public Long getClientID() {
         return clientID;
     }

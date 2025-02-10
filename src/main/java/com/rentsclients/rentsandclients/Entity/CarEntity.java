@@ -15,7 +15,16 @@ public class CarEntity {
     private String plate;
     private String carIsActivated;
 
+    public CarEntity() {
+    }
 
+    public CarEntity(Long carID, String brand, String model, String plate, String carIsActivated) {
+        this.carID = carID;
+        this.brand = brand;
+        this.model = model;
+        this.plate = plate;
+        this.carIsActivated = carIsActivated;
+    }
 
     public Long getCarID() {
         return carID;
