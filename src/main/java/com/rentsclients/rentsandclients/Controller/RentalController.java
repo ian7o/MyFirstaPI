@@ -53,7 +53,9 @@ public class RentalController {
             rentalRepository.save(findClient.get());
         }
     }
-
+    //////////////////////////////
+    //ver se o nome coincide
+    //////////////////////////////
     @GetMapping("/deactivatedAccounts/{accountIsActivated}")
     public String getDeactivatedAccounts(@PathVariable("accountIsActivated") String accountIsActivated) {
         List<ClientEntity> searchClients = clientRepository.findByaccountIsActivated(accountIsActivated);

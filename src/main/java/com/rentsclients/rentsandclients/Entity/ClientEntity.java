@@ -1,9 +1,16 @@
 package com.rentsclients.rentsandclients.Entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Entity
-@Table(name = "ClientTest")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Entity(name = "ClientTest")
 public class ClientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,54 +22,5 @@ public class ClientEntity {
     private int nif;
     private String accountIsActivated;
 
-    public ClientEntity() {
-    }
 
-    public ClientEntity(Long clientID, String firstName, String lastName, int nif, String accountIsActivated) {
-        this.clientID = clientID;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.nif = nif;
-        this.accountIsActivated = accountIsActivated;
-    }
-
-    public Long getClientID() {
-        return clientID;
-    }
-
-    public void setClientID(Long clientID) {
-        this.clientID = clientID;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public int getNif() {
-        return nif;
-    }
-
-    public void setNif(int nif) {
-        this.nif = nif;
-    }
-
-    public String getAccountIsActivated() {
-        return accountIsActivated;
-    }
-
-    public void setAccountIsActivated(String accountIsActivated) {
-        this.accountIsActivated = accountIsActivated;
-    }
 }

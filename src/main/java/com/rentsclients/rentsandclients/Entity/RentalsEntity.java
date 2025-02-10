@@ -1,15 +1,12 @@
 package com.rentsclients.rentsandclients.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "rentrest")
+@Getter
+@Setter
+@Entity(name = "rentrest")
 public class RentalsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

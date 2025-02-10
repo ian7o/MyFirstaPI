@@ -1,90 +1,57 @@
 package com.rentsclients.rentsandclients.Controller;
 
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
-import com.rentsclients.rentsandclients.Repository.ClientRepository;
+import com.rentsclients.rentsandclients.service.ClientService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/client")
 public class ClientController {
 
-    private final ClientRepository repository;
+    private final ClientService clientService;
 
-    public ClientController(ClientRepository repository) {
-        this.repository = repository;
+    public ClientController(ClientService clientService) {
+        this.clientService = clientService;
     }
 
     @PostMapping
     public void createAClient(@RequestBody ClientEntity clientEntity) {
-        repository.save(clientEntity);
+       this.clientService.createAClient(clientEntity);
     }
 
     @GetMapping
-    public List<ClientEntity> getAllClients() {
-        return repository.findAll();
+    public void getAllClients() {
+        ClientEntity clientEntity = new ClientEntity();
+         clientService.getAllClientsService(clientEntity);
+    }
+        @GetMapping("/getASpecifiqueClientID/{id}")
+    public void getASpecifiqueClientID(@PathVariable("id") Long id) {
+        clientService.getASpecifiqueClientIDService(id);
     }
 
     @PutMapping("/updateAllClientInfos/{id}")
-    public ClientEntity updateClientByID(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
-        Optional<ClientEntity> findClient = repository.findById(id);
-        if (findClient.isPresent()) {
-            ClientEntity clientToUpDate = findClient.get();
-            clientToUpDate.setAccountIsActivated(clientEntity.getAccountIsActivated());
-            clientToUpDate.setFirstName(clientEntity.getFirstName());
-            clientToUpDate.setLastName(clientEntity.getLastName());
-            clientToUpDate.setNif(clientEntity.getNif());
-            return repository.save(findClient.get());
-        }
-        return null;
+    public void updateClientByID(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
+        clientService.updateClientByIDService(id, clientEntity);
     }
 
     @DeleteMapping("/{id}")
     public void deleteASpecifiqueClientID(@PathVariable("id") Long id) {
-        repository.deleteById(id);
+        clientService.deleteClientByIDService(id);
     }
 
+
     @GetMapping("/deactivatedAccounts/{accountIsActivated}")
-    public String getDeactivatedAccounts(@PathVariable("accountIsActivated") String accountIsActivated) {
-        List<ClientEntity> findd = repository.findByaccountIsActivated(accountIsActivated);
-        if (!findd.isEmpty()) {
-            String firstsAndLastsNames = " ";
-            for (int i = 0; i < findd.size(); i++) {
-                firstsAndLastsNames += findd.get(i).getFirstName() + " " + findd.get(i).getLastName() + ", ";
-            }
-            return firstsAndLastsNames;
-        }
-        return "not find";
+    public void getDeactivatedAccounts(@PathVariable("accountIsActivated") String accountIsActivated) {
+        clientService.getDeactivatedAccountsService(accountIsActivated);
     }
 
     @PutMapping("updateClientFirstNameAndLastName/{id}")
-    public ClientEntity updateClientFirstNameAndLastName(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
-        Optional<ClientEntity> findClient = repository.findById(id);
-        if (findClient.isPresent()) {
-            ClientEntity clientToUpDate = findClient.get();
-            clientToUpDate.setFirstName(clientEntity.getFirstName());
-            clientToUpDate.setLastName(clientEntity.getLastName());
-            return repository.save(findClient.get());
-        }
-        return null;
+    public void updateClientFirstNameAndLastName(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
+        clientService.updateClientFirstNameAndLastNameService(id,clientEntity);
     }
 
     @PutMapping("/activeOrDesativeClient/{id}")
-    public ClientEntity activeOrDesativeCLientByID(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
-        Optional<ClientEntity> findClient = repository.findById(id);
-        if (findClient.isPresent()) {
-            ClientEntity clientToUpDate = findClient.get();
-            clientToUpDate.setAccountIsActivated(clientEntity.getAccountIsActivated());
-            return repository.save(findClient.get());
-        }
-        return null;
+    public void activeOrDesativeCLientByID(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
+        clientService.activeOrDesativeCLientByIDService(id, clientEntity);
     }
-
-    @GetMapping("/getASpecifiqueClientID/{id}")
-    public ClientEntity getASpecifiqueClientID(@PathVariable("id") Long id) {
-        return repository.findById(id).orElse(null);
-    }
-
 }
