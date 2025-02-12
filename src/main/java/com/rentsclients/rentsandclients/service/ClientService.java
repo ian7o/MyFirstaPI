@@ -2,6 +2,7 @@ package com.rentsclients.rentsandclients.service;
 
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
 import com.rentsclients.rentsandclients.Repository.ClientRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,12 +13,13 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
 
+    @Autowired
     public ClientService(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
 
     public ClientEntity createAClient(ClientEntity client) {
-       return this.clientRepository.save(client);
+        return this.clientRepository.save(client);
     }
 
     public List<ClientEntity> getAllClients(ClientEntity client) {
@@ -25,13 +27,13 @@ public class ClientService {
         return listWithAllClients;
     }
 
-    public ClientEntity getASpecifiqueClientID( Long id) {
-        ClientEntity clientRepository1 =clientRepository.findById(id).orElse(null);
+    public ClientEntity getASpecifiqueClientID(Long id) {
+        ClientEntity clientRepository1 = clientRepository.findById(id).orElse(null);
         return clientRepository1;
     }
 
 
-    public ClientEntity updateClientByID(long id,  ClientEntity clientEntity) {
+    public ClientEntity updateClientByID(long id, ClientEntity clientEntity) {
         Optional<ClientEntity> findClient = clientRepository.findById(id);
         if (findClient.isPresent()) {
             findClient.get().setActivated(clientEntity.isActivated());
@@ -46,7 +48,8 @@ public class ClientService {
     public void deleteClientByID(Long id) {
         clientRepository.deleteById(id);
     }
-//
+
+    //
     public String getActivatedAccounts() {
         List<ClientEntity> clients = clientRepository.findByActivatedFalse();
         if (!clients.isEmpty()) {
@@ -59,7 +62,7 @@ public class ClientService {
         return "not find";
     }
 
-    public ClientEntity updateClientFirstNameAndLastName(long id,  ClientEntity clientEntity) {
+    public ClientEntity updateClientFirstNameAndLastName(long id, ClientEntity clientEntity) {
         Optional<ClientEntity> findClient = clientRepository.findById(id);
         if (findClient.isPresent()) {
             findClient.get().setFirstName(clientEntity.getFirstName());
