@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface ClientRepository extends JpaRepository<ClientEntity, Long> {
+    List<ClientEntity> findByActivatedFalse();
+    List<ClientEntity> findByActivatedTrue();
 
-    List<ClientEntity> findByaccountIsActivated(String accountIsActivated);
 }

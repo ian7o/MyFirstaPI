@@ -3,8 +3,6 @@ package com.rentsclients.rentsandclients.service;
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
 import com.rentsclients.rentsandclients.Repository.ClientRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,71 +12,68 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
 
-
     public ClientService(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
 
-    public void createAClient(ClientEntity client) {
-        this.clientRepository.save(client);
+    public ClientEntity createAClient(ClientEntity client) {
+       return this.clientRepository.save(client);
     }
 
-    public List<ClientEntity> getAllClientsService(ClientEntity client) {
+    public List<ClientEntity> getAllClients(ClientEntity client) {
         List<ClientEntity> listWithAllClients = clientRepository.findAll();
         return listWithAllClients;
     }
 
-    public ClientEntity getASpecifiqueClientIDService(@PathVariable("id") Long id) {
+    public ClientEntity getASpecifiqueClientID( Long id) {
         ClientEntity clientRepository1 =clientRepository.findById(id).orElse(null);
         return clientRepository1;
     }
 
 
-    public ClientEntity updateClientByIDService(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
+    public ClientEntity updateClientByID(long id,  ClientEntity clientEntity) {
         Optional<ClientEntity> findClient = clientRepository.findById(id);
         if (findClient.isPresent()) {
-            ClientEntity clientToUpDate = findClient.get();
-            clientToUpDate.setAccountIsActivated(clientEntity.getAccountIsActivated());
-            clientToUpDate.setFirstName(clientEntity.getFirstName());
-            clientToUpDate.setLastName(clientEntity.getLastName());
-            clientToUpDate.setNif(clientEntity.getNif());
+            findClient.get().setActivated(clientEntity.isActivated());
+            findClient.get().setFirstName(clientEntity.getFirstName());
+            findClient.get().setLastName(clientEntity.getLastName());
+            findClient.get().setNif(clientEntity.getNif());
             return clientRepository.save(findClient.get());
         }
         return null;
     }
 
-    public void deleteClientByIDService(@PathVariable("id") Long id) {
+    public void deleteClientByID(Long id) {
         clientRepository.deleteById(id);
     }
-
-    public String getDeactivatedAccountsService(@PathVariable("accountIsActivated") String accountIsActivated) {
-        List<ClientEntity> findd = clientRepository.findByaccountIsActivated(accountIsActivated);
-        if (!findd.isEmpty()) {
+//
+    public String getActivatedAccounts() {
+        List<ClientEntity> clients = clientRepository.findByActivatedFalse();
+        if (!clients.isEmpty()) {
             String firstsAndLastsNames = " ";
-            for (int i = 0; i < findd.size(); i++) {
-                firstsAndLastsNames += findd.get(i).getFirstName() + " " + findd.get(i).getLastName() + ", ";
+            for (ClientEntity client : clients) {
+                firstsAndLastsNames += client.getFirstName() + " " + client.getLastName() + ", ";
             }
             return firstsAndLastsNames;
         }
         return "not find";
     }
 
-    public ClientEntity updateClientFirstNameAndLastNameService (@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
+    public ClientEntity updateClientFirstNameAndLastName(long id,  ClientEntity clientEntity) {
         Optional<ClientEntity> findClient = clientRepository.findById(id);
         if (findClient.isPresent()) {
+            findClient.get().setFirstName(clientEntity.getFirstName());
             ClientEntity clientToUpDate = findClient.get();
-            clientToUpDate.setFirstName(clientEntity.getFirstName());
             clientToUpDate.setLastName(clientEntity.getLastName());
             return clientRepository.save(findClient.get());
         }
         return null;
     }
 
-    public ClientEntity activeOrDesativeCLientByIDService(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
+    public ClientEntity activateOrDeactivateClientByID(long id, ClientEntity clientEntity) {
         Optional<ClientEntity> findClient = clientRepository.findById(id);
         if (findClient.isPresent()) {
-            ClientEntity clientToUpDate = findClient.get();
-            clientToUpDate.setAccountIsActivated(clientEntity.getAccountIsActivated());
+            findClient.get().setActivated(clientEntity.isActivated());
             return clientRepository.save(findClient.get());
         }
         return null;

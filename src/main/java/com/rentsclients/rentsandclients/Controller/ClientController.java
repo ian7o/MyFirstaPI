@@ -4,6 +4,8 @@ import com.rentsclients.rentsandclients.Entity.ClientEntity;
 import com.rentsclients.rentsandclients.service.ClientService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/client")
 public class ClientController {
@@ -14,44 +16,44 @@ public class ClientController {
         this.clientService = clientService;
     }
 
-    @PostMapping
-    public void createAClient(@RequestBody ClientEntity clientEntity) {
-       this.clientService.createAClient(clientEntity);
+    @GetMapping("/{id}")
+    public ClientEntity getClientById(@PathVariable("id") Long id) {
+      return  clientService.getASpecifiqueClientID(id);
     }
 
     @GetMapping
-    public void getAllClients() {
+    public List<ClientEntity> getAllClients() {
         ClientEntity clientEntity = new ClientEntity();
-         clientService.getAllClientsService(clientEntity);
-    }
-        @GetMapping("/getASpecifiqueClientID/{id}")
-    public void getASpecifiqueClientID(@PathVariable("id") Long id) {
-        clientService.getASpecifiqueClientIDService(id);
+        return clientService.getAllClients(clientEntity);
     }
 
-    @PutMapping("/updateAllClientInfos/{id}")
-    public void updateClientByID(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
-        clientService.updateClientByIDService(id, clientEntity);
+    @PostMapping
+    public ClientEntity createClient(@RequestBody ClientEntity clientEntity) {
+      return this.clientService.createAClient(clientEntity);
+    }
+
+    @PutMapping("/update/{id}")
+    public ClientEntity updateClientByID(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
+        return clientService.updateClientByID(id, clientEntity);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteASpecifiqueClientID(@PathVariable("id") Long id) {
-        clientService.deleteClientByIDService(id);
+    public void deleteClientByID(@PathVariable("id") Long id) {
+        clientService.deleteClientByID(id);
     }
 
-
-    @GetMapping("/deactivatedAccounts/{accountIsActivated}")
-    public void getDeactivatedAccounts(@PathVariable("accountIsActivated") String accountIsActivated) {
-        clientService.getDeactivatedAccountsService(accountIsActivated);
+    @GetMapping("/deactivatedAccounts")
+    public String getActivatedAccounts(){
+       return clientService.getActivatedAccounts();
     }
 
     @PutMapping("updateClientFirstNameAndLastName/{id}")
-    public void updateClientFirstNameAndLastName(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
-        clientService.updateClientFirstNameAndLastNameService(id,clientEntity);
+    public ClientEntity updateClientFirstNameAndLastName(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
+      return  clientService.updateClientFirstNameAndLastName(id, clientEntity);
     }
 
-    @PutMapping("/activeOrDesativeClient/{id}")
-    public void activeOrDesativeCLientByID(@PathVariable("id") long id, @RequestBody ClientEntity clientEntity) {
-        clientService.activeOrDesativeCLientByIDService(id, clientEntity);
+    @PutMapping("/activeOrDeactivateClient/{id}")
+    public ClientEntity activeOrDeactivateClientByID(@PathVariable("id") long id,@RequestBody ClientEntity clientEntity) {
+        return clientService.activateOrDeactivateClientByID(id, clientEntity);
     }
 }

@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-@Entity(name = "ClientTest")
+@Entity(name = "Client")
 public class ClientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,5 @@ public class ClientEntity {
     //pois o nif é obrigatorio
     @Column(unique = true, nullable = false)
     private int nif;
-    private String accountIsActivated;
-
-
+    private boolean activated;
 }

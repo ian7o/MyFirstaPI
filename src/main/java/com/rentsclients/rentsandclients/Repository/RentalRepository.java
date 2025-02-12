@@ -8,6 +8,9 @@ import java.util.List;
 
 @Repository
 public interface RentalRepository extends JpaRepository<RentalsEntity, Long> {
-//    List<RentalsEntity> findByClientfirstName(String accountIsActivated);
+
+    List<RentalsEntity> findByClientActivatedTrue();
+    List<RentalsEntity> findByClientActivatedFalse();
+//    List<RentalsEntity> findByClientActivatedAndCarActivatedTrue();
 
 }
