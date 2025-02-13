@@ -28,4 +28,13 @@ public class RentalsEntity {
 
     @Column(name = "endTime")
     private LocalDateTime endTime;
+
+
+    public RentalsEntity(Long rentalID, CarEntity car, ClientEntity client, LocalDateTime startTime, LocalDateTime endTime) {
+        this.rentalID = rentalID;
+        this.car = car;
+        this.client = client;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 }

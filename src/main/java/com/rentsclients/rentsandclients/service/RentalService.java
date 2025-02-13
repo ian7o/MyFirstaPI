@@ -1,5 +1,8 @@
 package com.rentsclients.rentsandclients.service;
 
+import com.rentsclients.rentsandclients.DTOS.CarDTO;
+import com.rentsclients.rentsandclients.DTOS.ClientDTO;
+import com.rentsclients.rentsandclients.DTOS.RentalDTO;
 import com.rentsclients.rentsandclients.Entity.CarEntity;
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
 import com.rentsclients.rentsandclients.Entity.RentalsEntity;
@@ -8,6 +11,7 @@ import com.rentsclients.rentsandclients.Repository.ClientRepository;
 import com.rentsclients.rentsandclients.Repository.RentalRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,22 +29,27 @@ public class RentalService {
         this.carRepository = carRepository;
     }
 
-    public RentalsEntity createRent(RentalsEntity rentalsEntity) {
-        return rentalRepository.save(rentalsEntity);
+    public RentalDTO createRent(RentalDTO rentalDTO) {
+        RentalsEntity rentalsEntity = new RentalsEntity(rentalDTO.getRentalID(), rentalDTO.getCar(), rentalDTO.getClient(), rentalDTO.getStartTime(), rentalDTO.getEndTime());
+
+        RentalsEntity clientSaved = rentalRepository.save(rentalsEntity);
+
+        return new RentalDTO(clientSaved.getRentalID(), clientSaved.getCar(), clientSaved.getClient(), clientSaved.getStartTime(), clientSaved.getEndTime());
     }
 
     public List<RentalsEntity> getAllRents() {
         return rentalRepository.findAll();
     }
 
-    public RentalsEntity updateRentsByID(long id, RentalsEntity rentalsEntity) {
+    public RentalDTO updateRentsByID(long id, RentalDTO rentalDTO) {
         Optional<RentalsEntity> findRent = rentalRepository.findById(id);
         if (findRent.isPresent()) {
-            findRent.get().setClient(rentalsEntity.getClient());
-            findRent.get().setCar(rentalsEntity.getCar());
-            findRent.get().setStartTime(rentalsEntity.getStartTime());
-            findRent.get().setEndTime(rentalsEntity.getEndTime());
-            return rentalRepository.save(findRent.get());
+            findRent.get().setClient(rentalDTO.getClient());
+            findRent.get().setCar(rentalDTO.getCar());
+            findRent.get().setStartTime(rentalDTO.getStartTime());
+            findRent.get().setEndTime(rentalDTO.getEndTime());
+            RentalsEntity savedRental = rentalRepository.save(findRent.get());
+            return new RentalDTO(savedRental.getRentalID(), savedRental.getCar(), savedRental.getClient(), savedRental.getStartTime(), savedRental.getEndTime());
         }
         return null;
     }
@@ -71,17 +80,31 @@ public class RentalService {
         rentalRepository.deleteById(id);
     }
 
-    public String getAllActiveClientsWithRentals(){
+    public String getAllActiveClientsWithRentals() {
         List<RentalsEntity> searchClient = rentalRepository.findByClientActivatedTrue();
-        if (!searchClient.isEmpty()){
-            String firstnames =" ";
-            for (RentalsEntity aa : searchClient){
-                firstnames += aa.getClient().getFirstName() +", ";
+        if (!searchClient.isEmpty()) {
+            String firstnames = " ";
+            for (RentalsEntity aa : searchClient) {
+                firstnames += aa.getClient().getFirstName() + ", ";
             }
             return firstnames;
         }
         return null;
     }
+
+//    public List<CarDTO> getPlates() {
+//        List<RentalsEntity> entities = rentalRepository.findByClientActivatedFalse();
+//        List<CarDTO> carDTOList = new ArrayList<>();
+//        if (!entities.isEmpty()) {
+//            for (RentalsEntity bb : entities) {
+//                //vai voltar o está ativado nao sei pq
+//                CarDTO carDTO = new CarDTO(null, null, null, bb.getCar().getPlate());
+//                carDTOList.add(carDTO);
+//            }
+//            return carDTOList;
+//        }
+//        return null;
+//    }
 
     public String getPlates(){
         List<RentalsEntity> entities = rentalRepository.findByClientActivatedFalse();
