@@ -1,5 +1,7 @@
 package com.rentsclients.rentsandclients.Controller;
 
+import com.rentsclients.rentsandclients.DTOS.CarDTO;
+import com.rentsclients.rentsandclients.DTOS.RentalDTO;
 import com.rentsclients.rentsandclients.Entity.RentalsEntity;
 
 import com.rentsclients.rentsandclients.service.RentalService;
@@ -19,8 +21,8 @@ public class RentalController {
 
 
     @PostMapping
-    public RentalsEntity createRent(@RequestBody RentalsEntity rentalsEntity) {
-        return rentalService.createRent(rentalsEntity);
+    public RentalDTO createRent(@RequestBody RentalDTO rentalDTO) {
+        return rentalService.createRent(rentalDTO);
     }
 
     @GetMapping
@@ -29,8 +31,8 @@ public class RentalController {
     }
 
     @PutMapping("/{id}")
-    public RentalsEntity updateRentsByID(@PathVariable("id") long id, @RequestBody RentalsEntity rentalsEntity) {
-        return rentalService.updateRentsByID(id, rentalsEntity);
+    public RentalDTO updateRentsByID(@PathVariable("id") long id, @RequestBody RentalDTO rentalDTO) {
+        return rentalService.updateRentsByID(id, rentalDTO);
     }
 
     @GetMapping("/deactivatedRentsAndCars")
@@ -49,6 +51,6 @@ public class RentalController {
     }
     @GetMapping("/api/plate")
     public String getPlateActiveClientVehicleDeactive(){
-        return "cars plates with DeactivedCLients " +rentalService.getPlates();
+        return rentalService.getPlates();
     }
 }
