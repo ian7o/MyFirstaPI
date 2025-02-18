@@ -2,7 +2,7 @@ package com.rentsclients.rentsandclients.service;
 
 import com.rentsclients.rentsandclients.DTOS.CarDTO;
 import com.rentsclients.rentsandclients.Entity.CarEntity;
-import com.rentsclients.rentsandclients.Mappers.CarMapp;
+import com.rentsclients.rentsandclients.Mappers.CarMapeer;
 import com.rentsclients.rentsandclients.Repository.CarRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +17,14 @@ public class CarService {
     }
 
     public CarDTO createACar(CarDTO carDTO) {
-        CarEntity carEntity = CarMapp.Instance.carDtoToCar(carDTO);
+        CarEntity carEntity = CarMapeer.Instance.carDtoToCar(carDTO);
 
         if (carRepository.existsByPlate(carEntity.getPlate())){
             throw new RuntimeException("The plate is already registered ");
         }
 
         CarEntity carSaved = carRepository.save(carEntity);
-        return CarMapp.Instance.carToCardto(carSaved);
+        return CarMapeer.Instance.carToCardto(carSaved);
     }
 
     public List<CarEntity> getAllCars() {
@@ -32,14 +32,14 @@ public class CarService {
     }
 
     public CarDTO getASpecifiqueCarID(Long id) {
-        return CarMapp.Instance.carToCardto(carRepository.findById(id)
+        return CarMapeer.Instance.carToCardto(carRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CarID not found")));
     }
 
     public CarDTO updateCarByID(Long id, CarDTO carDTO) {
         CarEntity findCar = carRepository.findById(id).orElseThrow(() -> new RuntimeException("CarID not found"));
 
-        CarEntity updateCar = CarMapp.Instance.carDtoToCar(carDTO);
+        CarEntity updateCar = CarMapeer.Instance.carDtoToCar(carDTO);
 
         if (carRepository.existsByPlate(updateCar.getPlate())){
             throw new RuntimeException("The plate is already registered ");
@@ -47,7 +47,7 @@ public class CarService {
 
         updateCar.setCarID(findCar.getCarID());
         CarEntity savedCar = carRepository.save(updateCar);
-        return CarMapp.Instance.carToCardto(savedCar);
+        return CarMapeer.Instance.carToCardto(savedCar);
     }
 
     public CarDTO activateOrDeactivateCarByID(long id, CarDTO carDTO) {
@@ -56,12 +56,23 @@ public class CarService {
         findCar.setActivated(carDTO.isActivated());
         CarEntity savedCar = carRepository.save(findCar);
 
-        return CarMapp.Instance.carToCardto(savedCar);
+        return CarMapeer.Instance.carToCardto(savedCar);
     }
+
+//    public CarDTO associateCarWithClient(long id, CarDTO carDTO) {
+//        CarEntity findCar = carRepository.findById(id).orElseThrow(() -> new RuntimeException("ID not found. The car will not be updated"));
+//
+//        findCar.setClients(carDTO.getClients());
+//        CarEntity savedCar = carRepository.save(findCar);
+//
+//        return CarMapp.Instance.carToCardto(savedCar);
+//    }
+
+
 
     public CarDTO deleteCarByID(Long id) {
         CarEntity findCar = carRepository.findById(id).orElseThrow(() -> new RuntimeException("ID not found. The car will not be deleted"));
         carRepository.deleteById(id);
-        return CarMapp.Instance.carToCardto(findCar);
+        return CarMapeer.Instance.carToCardto(findCar);
     }
 }

@@ -2,7 +2,6 @@ package com.rentsclients.rentsandclients.service;
 
 import com.rentsclients.rentsandclients.DTOS.ClientDTO;
 import com.rentsclients.rentsandclients.Exceptions.ClientNotFoundException;
-import com.rentsclients.rentsandclients.Mappers.CarMapp;
 import com.rentsclients.rentsandclients.Mappers.ClientMapper;
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
 import com.rentsclients.rentsandclients.Repository.ClientRepository;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ClientService {
@@ -31,7 +29,7 @@ public class ClientService {
         }
 
         ClientEntity savedEntity = clientRepository.save(converterInEntity);
-        return ClientMapper.Instance.clientToClientdto(savedEntity);
+        return clientDTO;
     }
 
     public List<ClientEntity> getAllClients(ClientEntity client) {
@@ -67,11 +65,16 @@ public class ClientService {
         List<ClientEntity> clients = clientRepository.findByActivatedFalse();
         List<ClientDTO> clientDTOList = new ArrayList<>();
 
-        clients.forEach(client -> clientDTOList.add(new ClientDTO(
-                client.getClientID(),
-                client.getFirstName(),
-                client.getLastName()
-        )));
+        clients.forEach(client -> clientDTOList.add((
+                new ClientDTO(
+                     null,
+                        client.getFirstName(),
+                        client.getLastName(),
+                     null,
+                     null,
+                        null
+                )
+                )));
 
         if (clientDTOList.isEmpty()){
             throw new RuntimeException("Nothing to show");

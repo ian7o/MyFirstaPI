@@ -1,13 +1,10 @@
 package com.rentsclients.rentsandclients.Controller;
 
 import com.rentsclients.rentsandclients.DTOS.CarDTO;
-import com.rentsclients.rentsandclients.Entity.CarEntity;
 import com.rentsclients.rentsandclients.service.CarService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/car")
@@ -58,7 +55,7 @@ public class CarController {
     }
 
     @PutMapping("/activeOrDeactivateCar/{id}")
-    public ResponseEntity<?> activeOrDesativeCarrByID(@PathVariable("id") long id, @RequestBody CarDTO carDTO) throws Exception {
+    public ResponseEntity<?> activeOrDesativeCarrByID(@PathVariable("id") long id, @RequestBody CarDTO carDTO) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(carService.activateOrDeactivateCarByID(id, carDTO));
         } catch (Exception e) {
@@ -66,6 +63,16 @@ public class CarController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+//    @PutMapping("/associate/{id}")
+//    public ResponseEntity<?> asociateCarWithClient(@PathVariable("id") Long id, @RequestBody CarDTO carDTO) {
+//        try {
+//            return ResponseEntity.ok(carService.associateCarWithClient(id, carDTO));
+//        } catch (Exception e) {
+//            System.out.println("error in asociateCarWithClient: " + e.getMessage());
+//            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
+//        }
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteASpecifiqueCarID(@PathVariable("id") Long id) {

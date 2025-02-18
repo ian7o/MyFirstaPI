@@ -6,12 +6,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface CarMapp {
-    CarMapp Instance = Mappers.getMapper(CarMapp.class);
+public interface CarMapeer {
+    CarMapeer Instance = Mappers.getMapper(CarMapeer.class);
 
     CarEntity carDtoToCar(CarDTO carDTO);
 
     CarDTO carToCardto(CarEntity carEntity);
-
-
 }
