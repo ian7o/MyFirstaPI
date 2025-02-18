@@ -20,51 +20,60 @@ public class CarController {
 
     @PostMapping
     public ResponseEntity<?> createACar(@RequestBody CarDTO carDTO) {
-        CarDTO carEntity = carService.createACar(carDTO);
-        if (carEntity != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(carEntity);
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(carService.createACar(carDTO));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("cannot create");
     }
 
     @GetMapping
     public ResponseEntity<?> getAll() {
-        List<CarEntity> carDTO = carService.getAllCars();
-        if (carDTO.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("not Found results");
+        try {
+            return ResponseEntity.status(HttpStatus.FOUND).body(carService.getAllCars());
+        } catch (Exception e) {
+            System.out.println("Error in ResponseEntity: getAllCars: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.FOUND).body(carDTO);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCarById(@PathVariable("id") Long id) throws Exception {
-        CarDTO carDTO = carService.getASpecifiqueCarID(id);
-        if (carDTO == null) {
-          return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("not Found");
+    public ResponseEntity<?> getCarById(@PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.status(HttpStatus.FOUND).body(carService.getASpecifiqueCarID(id));
+        } catch (Exception e) {
+            System.out.println("Error in getCarById: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-       return ResponseEntity.status(HttpStatus.FOUND).body(carDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCarByID(@PathVariable("id") Long id, @RequestBody CarDTO carDTO) throws Exception {
-        CarDTO carDTO1 = carService.updateCarByID(id, carDTO);
-        if (carDTO1==null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id not found");
+    public ResponseEntity<?> updateCarByID(@PathVariable("id") Long id, @RequestBody CarDTO carDTO) {
+        try {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(carService.updateCarByID(id, carDTO));
+        } catch (RuntimeException e) {
+            System.out.println("Error in updateCarByID: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(carDTO1);
     }
 
     @PutMapping("/activeOrDeactivateCar/{id}")
     public ResponseEntity<?> activeOrDesativeCarrByID(@PathVariable("id") long id, @RequestBody CarDTO carDTO) throws Exception {
-        CarDTO carDTO1 = carService.activateOrDeactivateCarByID(id, carDTO);
-        if (carDTO1==null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("id not found");
+        try {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(carService.activateOrDeactivateCarByID(id, carDTO));
+        } catch (Exception e) {
+            System.out.println("Error in activeOrDesativeCarrByID: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(carDTO1);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteASpecifiqueCarID(@PathVariable("id") Long id) {
-        carService.deleteCarByID(id);
+    public ResponseEntity<?> deleteASpecifiqueCarID(@PathVariable("id") Long id) {
+        try {
+            carService.deleteCarByID(id);
+            return ResponseEntity.ok("Car successful deleted");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

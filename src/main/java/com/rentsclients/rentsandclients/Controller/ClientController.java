@@ -2,7 +2,9 @@ package com.rentsclients.rentsandclients.Controller;
 
 import com.rentsclients.rentsandclients.DTOS.ClientDTO;
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
+import com.rentsclients.rentsandclients.Exceptions.ClientNotFoundException;
 import com.rentsclients.rentsandclients.service.ClientService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,44 +15,46 @@ import java.util.List;
 @RequestMapping("/client")
 public class ClientController {
 
-    private final ClientService clientService;
-
-    public ClientController(ClientService clientService) {
-        this.clientService = clientService;
-    }
+    @Autowired
+    ClientService clientService;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getASpecifiqueClientID(@PathVariable("id") Long id) {
         try {
-            ClientDTO clientDTO = clientService.getASpecifiqueClientByID(id);
-            return ResponseEntity.ok(clientDTO);
+            return ResponseEntity.ok(clientService.getASpecifiqueClientByID(id));
         } catch (Exception e) {
-            System.out.println("error in getASpecifiqueClientID " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID not found");
+            System.out.println("Error in getASpecifiqueClientID: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
-
     @GetMapping
-    public List<ClientEntity> getAllClients() {
+    public ResponseEntity<?> getAllClients() {
         ClientEntity clientEntity = new ClientEntity();
-        return clientService.getAllClients(clientEntity);
+        try {
+            return ResponseEntity.ok(clientService.getAllClients(clientEntity));
+        } catch (RuntimeException e) {
+            System.out.println("Error in getAllClients: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
     }
 
     @PostMapping
-    public ResponseEntity<ClientDTO> createClient(@RequestBody ClientDTO clientDTO) {
-        ClientDTO saveClient = clientService.createAClient(clientDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saveClient);
+    public ResponseEntity<?> createClient(@RequestBody ClientDTO clientDTO) {
+        try {
+            return ResponseEntity.ok(clientService.createAClient(clientDTO));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
+        }
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateClientByID(@PathVariable("id") long id, @RequestBody ClientDTO clientDTO) throws Exception {
+    public ResponseEntity<?> updateClientByID(@PathVariable("id") long id, @RequestBody ClientDTO clientDTO) {
         try {
-            ClientDTO saveClient = clientService.updateClientByID(id, clientDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(saveClient);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(clientService.updateClientByID(id, clientDTO));
         } catch (Exception e) {
-            System.out.println("error in update: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("id Not find");
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
         }
     }
 
@@ -62,47 +66,28 @@ public class ClientController {
     @GetMapping("/deactivatedAccounts")
     public ResponseEntity<?> getActivatedAccounts() {
         try {
-            List<ClientDTO> searcc = clientService.getActivatedAccounts();
-            if (searcc != null) {
-                return ResponseEntity.ok().body(searcc);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Results");
-            }
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(clientService.getActivatedAccounts());
         } catch (Exception e) {
-            System.out.println("errir in /deactivatedAccounts" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Results");
+            return ResponseEntity.status(HttpStatus.PRECONDITION_REQUIRED).body(e.getMessage());
         }
     }
 
     @PutMapping("updateClientFirstNameAndLastName/{id}")
-    public ResponseEntity<?> updateClientFirstNameAndLastName(@PathVariable("id") long id, @RequestBody ClientDTO clientDTO) throws Exception {
+    public ResponseEntity<?> updateClientFirstNameAndLastName(@PathVariable("id") long id, @RequestBody ClientDTO clientDTO) {
         try {
-            ClientDTO clientDTOUpdated = clientService.updateClientFirstNameAndLastName(id, clientDTO);
-            if (clientDTOUpdated == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("notFind");
-            } else {
-                return ResponseEntity.ok().body(clientDTOUpdated);
-            }
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(clientService.updateClientFirstNameAndLastName(id, clientDTO));
         } catch (Exception e) {
-            System.out.println("error in updateClientFirstNameAndLastName: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Find ");
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("ID Not found");
         }
-
     }
 
     @PutMapping("/activeOrDeactivateClient/{id}")
-    public ResponseEntity<?> activeOrDeactivateClientByID(@PathVariable("id") long id, @RequestBody ClientDTO clientDTO) throws Exception {
+    public ResponseEntity<?> activeOrDeactivateClientByID(@PathVariable("id") long id, @RequestBody ClientDTO clientDTO) {
         try {
-            ClientDTO searchClient = clientService.activateOrDeactivateClientByID(id, clientDTO);
-            if (searchClient == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID not find");
-            } else if (searchClient != null) {
-                return ResponseEntity.status(HttpStatus.OK).body(searchClient);
-            }
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(clientService.activateOrDeactivateClientByID(id, clientDTO));
         }
-        catch (Exception e){
-            System.out.println("error in activeOrDeactivateClient: " + e.getMessage());
+        catch (ClientNotFoundException e){
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body("ID Not found");
         }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID not found");
     }
 }

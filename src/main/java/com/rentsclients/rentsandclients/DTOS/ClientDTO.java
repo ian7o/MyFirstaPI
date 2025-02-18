@@ -25,4 +25,10 @@ public class ClientDTO {
         this.nif = nif;
         this.activated = activated;
     }
+
+    public ClientDTO(Long clientID, String firstName, String lastName) {
+        this.clientID = clientID;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 }
