@@ -1,34 +1,33 @@
 package com.rentsclients.rentsandclients.DTOS;
 
-import jakarta.persistence.Column;
+import com.rentsclients.rentsandclients.DTOS.CarDTO;
+import com.rentsclients.rentsandclients.Entity.CarEntity;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
 public class ClientDTO {
     private Long clientID;
     private String firstName;
     private String lastName;
     private Integer nif;
     private Boolean activated;
+    private List<CarDTO> cars;
 
-    public ClientDTO() {
-    }
-
-    public ClientDTO(Long clientID, String firstName, String lastName, Integer nif, Boolean activated) {
+    public ClientDTO(Long clientID, String firstName, String lastName, Integer nif, Boolean activated, List<CarDTO> cars) {
         this.clientID = clientID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.nif = nif;
         this.activated = activated;
-    }
-
-    public ClientDTO(Long clientID, String firstName, String lastName) {
-        this.clientID = clientID;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.cars = cars;
     }
 }

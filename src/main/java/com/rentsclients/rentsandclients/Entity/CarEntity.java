@@ -1,15 +1,14 @@
 package com.rentsclients.rentsandclients.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "Car")
-@NoArgsConstructor
-@AllArgsConstructor
 @Setter
 @Getter
 public class CarEntity {
@@ -21,4 +20,20 @@ public class CarEntity {
     @Column(unique = true, nullable = false)
     private String plate;
     private boolean activated;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "client_id")
+    private List<ClientEntity> clients;
+
+    public CarEntity() {
+    }
+
+    public CarEntity(Long carID, String brand, String model, String plate, boolean activated, List<ClientEntity> clientids) {
+        this.carID = carID;
+        this.brand = brand;
+        this.model = model;
+        this.plate = plate;
+        this.activated = activated;
+        this.clients = clientids;
+    }
 }

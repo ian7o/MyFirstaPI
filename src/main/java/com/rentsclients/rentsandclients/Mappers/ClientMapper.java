@@ -11,7 +11,5 @@ public interface ClientMapper {
     ClientMapper Instance = Mappers.getMapper(ClientMapper.class);
 
     ClientEntity clientDtoToClient(ClientDTO clientDTO);
-
-    ClientDTO clientToClientdto(ClientEntity student);
-
+    ClientDTO clientToClientdto(ClientEntity clientEntity);
 }
