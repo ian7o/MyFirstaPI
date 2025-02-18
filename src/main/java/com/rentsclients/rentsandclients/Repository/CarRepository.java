@@ -8,8 +8,8 @@ import java.util.List;
 
 @Repository
 public interface CarRepository extends JpaRepository<CarEntity, Long> {
-//    List<CarEntity> findByActivatedTrue();
 
+    boolean existsByPlate(String plate);
     List<CarEntity> findByActivatedTrue();
 
 }

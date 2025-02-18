@@ -1,10 +1,9 @@
-package com.rentsclients.rentsandclients.DTOS;
+package com.rentsclients.rentsandclients.Mappers;
 
+import com.rentsclients.rentsandclients.DTOS.ClientDTO;
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-
-import java.util.List;
 
 @Mapper
 public interface ClientMapper {
@@ -13,6 +12,6 @@ public interface ClientMapper {
 
     ClientEntity clientDtoToClient(ClientDTO clientDTO);
 
-    ClientDTO clientToClient(ClientEntity student);
+    ClientDTO clientToClientdto(ClientEntity student);
 
 }

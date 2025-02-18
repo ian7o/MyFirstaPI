@@ -11,4 +11,5 @@ public interface ClientRepository extends JpaRepository<ClientEntity, Long> {
     List<ClientEntity> findByActivatedFalse();
     List<ClientEntity> findByActivatedTrue();
 
+    boolean existsByNif(int nif);
 }
