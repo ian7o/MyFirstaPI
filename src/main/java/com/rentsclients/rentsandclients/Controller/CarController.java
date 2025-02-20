@@ -16,11 +16,42 @@ public class CarController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createACar(@RequestBody CarDTO carDTO) {
+    public ResponseEntity<Void> createACar(@RequestBody CarDTO carDTO) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(carService.createACar(carDTO));
+            carService.createACar(carDTO);
+            return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateCarByID(@PathVariable("id") Long id, @RequestBody CarDTO carDTO) {
+        try {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(carService.updateCarByID(id, carDTO));
+        } catch (RuntimeException e) {
+            System.out.println("Error in updateCarByID: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/activeOrDeactivateCar/{id}")
+    public ResponseEntity<?> activeOrDesativeCarrByID(@PathVariable("id") long id, @RequestBody CarDTO carDTO) {
+        try {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(carService.activateOrDeactivateCarByID(id, carDTO));
+        } catch (Exception e) {
+            System.out.println("Error in activeOrDesativeCarrByID: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/associate/{carId}/client/{clientId}")
+    public ResponseEntity<?> associateCarWithClient(@PathVariable("carId") Long carID, @PathVariable("clientId") Long clientId) {
+        try {
+            return ResponseEntity.ok(carService.associateCarWithClient(carID, clientId));
+        } catch (Exception e) {
+            System.out.println("error in asociateCarWithClient: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
         }
     }
 
@@ -43,36 +74,6 @@ public class CarController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateCarByID(@PathVariable("id") Long id, @RequestBody CarDTO carDTO) {
-        try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(carService.updateCarByID(id, carDTO));
-        } catch (RuntimeException e) {
-            System.out.println("Error in updateCarByID: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
-
-    @PutMapping("/activeOrDeactivateCar/{id}")
-    public ResponseEntity<?> activeOrDesativeCarrByID(@PathVariable("id") long id, @RequestBody CarDTO carDTO) {
-        try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(carService.activateOrDeactivateCarByID(id, carDTO));
-        } catch (Exception e) {
-            System.out.println("Error in activeOrDesativeCarrByID: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
-
-//    @PutMapping("/associate/{id}")
-//    public ResponseEntity<?> asociateCarWithClient(@PathVariable("id") Long id, @RequestBody CarDTO carDTO) {
-//        try {
-//            return ResponseEntity.ok(carService.associateCarWithClient(id, carDTO));
-//        } catch (Exception e) {
-//            System.out.println("error in asociateCarWithClient: " + e.getMessage());
-//            return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
-//        }
-//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteASpecifiqueCarID(@PathVariable("id") Long id) {

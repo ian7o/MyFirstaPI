@@ -20,14 +20,12 @@ public class ClientDTO {
     private String lastName;
     private Integer nif;
     private Boolean activated;
-    private List<CarDTO> cars;
 
-    public ClientDTO(Long clientID, String firstName, String lastName, Integer nif, Boolean activated, List<CarDTO> cars) {
+    public ClientDTO(Long clientID, String firstName, String lastName, Integer nif, Boolean activated) {
         this.clientID = clientID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.nif = nif;
         this.activated = activated;
-        this.cars = cars;
     }
 }
