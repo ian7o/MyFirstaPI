@@ -16,10 +16,9 @@ public class CarController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createACar(@RequestBody CarDTO carDTO) {
+    public ResponseEntity<?> createACar(@RequestBody CarDTO carDTO) {
         try {
-            carService.createACar(carDTO);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok().body(carService.createACar(carDTO));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
@@ -34,27 +33,29 @@ public class CarController {
             return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
         }
     }
-
+//
     @PutMapping("/activeOrDeactivateCar/{id}")
     public ResponseEntity<?> activeOrDesativeCarrByID(@PathVariable("id") long id, @RequestBody CarDTO carDTO) {
         try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(carService.activateOrDeactivateCarByID(id, carDTO));
+            carService.activateOrDeactivateCarByID(id,carDTO);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Car updated");
         } catch (Exception e) {
             System.out.println("Error in activeOrDesativeCarrByID: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
         }
     }
-
+//
     @PutMapping("/associate/{carId}/client/{clientId}")
     public ResponseEntity<?> associateCarWithClient(@PathVariable("carId") Long carID, @PathVariable("clientId") Long clientId) {
         try {
-            return ResponseEntity.ok(carService.associateCarWithClient(carID, clientId));
+            carService.associateCarWithClient(carID , clientId);
+            return ResponseEntity.ok("Car associate");
         } catch (Exception e) {
-            System.out.println("error in asociateCarWithClient: " + e.getMessage());
+            System.out.println("Error in associate Car With Client: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
         }
     }
-
+//
     @GetMapping
     public ResponseEntity<?> getAll() {
         try {
@@ -64,17 +65,17 @@ public class CarController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getCarById(@PathVariable("id") Long id) {
-        try {
-            return ResponseEntity.status(HttpStatus.FOUND).body(carService.getASpecifiqueCarID(id));
-        } catch (Exception e) {
-            System.out.println("Error in getCarById: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
-
+//
+//    @GetMapping("/{id}")
+//    public ResponseEntity<?> getCarById(@PathVariable("id") Long id) {
+//        try {
+//            return ResponseEntity.status(HttpStatus.FOUND).body(carService.getASpecifiqueCarID(id));
+//        } catch (Exception e) {
+//            System.out.println("Error in getCarById: " + e.getMessage());
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+//        }
+//    }
+//
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteASpecifiqueCarID(@PathVariable("id") Long id) {
         try {
