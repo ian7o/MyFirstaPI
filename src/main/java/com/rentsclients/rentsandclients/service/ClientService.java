@@ -4,63 +4,111 @@ import com.rentsclients.rentsandclients.DTOS.ClientDTO;
 import com.rentsclients.rentsandclients.Exceptions.ClientNotFoundException;
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
 import com.rentsclients.rentsandclients.Repository.ClientRepository;
-import com.rentsclients.rentsandclients.mapper.ClientMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ClientService {
 
-    private final ClientRepository clientRepository;
-
-    private final ClientMapper clientMapper;
-
     @Autowired
-    public ClientService(ClientRepository clientRepository, ClientMapper clientMapper) {
-        this.clientRepository = clientRepository;
-        this.clientMapper = clientMapper;
-    }
+    ClientRepository clientRepository;
 
     public ClientDTO createAClient(ClientDTO clientDTO) {
-        ClientEntity converterInEntity = clientMapper.toClientEntity(clientDTO);
+
+        ClientEntity converterInEntity = new ClientEntity(
+                null,
+                clientDTO.getFirstName(),
+                clientDTO.getLastName(),
+                clientDTO.getNif(),
+                clientDTO.getActivated()
+        );
 
         if (clientRepository.existsByNif(converterInEntity.getNif())) {
             throw new ClientNotFoundException("A client with this nif already exists.");
         }
 
-        clientRepository.save(converterInEntity);
-        return clientDTO;
+        ClientEntity clientEntity = clientRepository.save(converterInEntity);
+        return new ClientDTO(
+                clientEntity.getClientid(),
+                clientDTO.getFirstName(),
+                clientDTO.getLastName(),
+                clientDTO.getNif(),
+                clientDTO.getActivated());
     }
 
+    public void updateClientByID(long id, ClientDTO clientDTO) {
+       ClientEntity clientEntity = clientRepository.findById(id)
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
+
+       clientEntity.setClientid(id);
+       clientEntity.setFirstName(clientDTO.getFirstName());
+       clientEntity.setLastName(clientDTO.getLastName());
+       clientEntity.setNif(clientEntity.getNif());
+       clientEntity.setActivated(clientDTO.getActivated());
+
+        clientRepository.save(clientEntity);
+
+
+//        ClientEntity saved = clientRepository.save(converterInClient);
+
+//        return new ClientDTO(
+//                saved.getClientid(),
+//                saved.getFirstName(),
+//                saved.getLastName(),
+//                saved.getNif(),
+//                saved.isActivated()
+//        );
+    }
+
+    //
+    public void updateClientFirstNameAndLastName(long id, ClientDTO clientDTO) {
+        ClientEntity findClient = clientRepository.findById(id)
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
+
+        findClient.setFirstName(clientDTO.getFirstName());
+        findClient.setLastName(clientDTO.getLastName());
+
+        clientRepository.save(findClient);
+    }
+
+    //
+    public void activateOrDeactivateClientByID(long id, ClientDTO clientDTO) {
+        ClientEntity findClient = clientRepository.findById(id)
+                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
+
+        findClient.setActivated(clientDTO.getActivated());
+
+        clientRepository.save(findClient);
+
+    }
+
+    //
+//
     public List<ClientEntity> getAllClients(ClientEntity client) {
         return clientRepository.findAll();
     }
 
+    //
     public ClientDTO getASpecificClientByID(Long id) {
-        return clientMapper.toClientDto(this.clientRepository.findById(id)
-                .orElseThrow(() -> new ClientNotFoundException("Client not found")));
-    }
-
-
-    public ClientDTO updateClientByID(long id, ClientDTO clientDTO) {
-        ClientEntity searchClient = clientRepository.findById(id)
+        ClientEntity clientEntity = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
-        ClientEntity client = clientMapper.toClientEntity(clientDTO);
-        client.setClientid(searchClient.getClientid());
-
-        ClientEntity saved = clientRepository.save(client);
-
-        return clientMapper.toClientDto(saved);
+        return new ClientDTO(
+                clientEntity.getClientid(),
+                clientEntity.getFirstName(),
+                clientEntity.getLastName(),
+                clientEntity.getNif(),
+                clientEntity.isActivated()
+        );
     }
 
-    public void deleteClientByID(Long id) {
-        clientRepository.deleteById(id);
-    }
-
+    //
+//
+//
+//
 //    public List<ClientDTO> getActivatedAccounts() {
 //        List<ClientEntity> clients = clientRepository.findByActivatedFalse();
 //        List<ClientDTO> clientDTOList = new ArrayList<>();
@@ -81,27 +129,10 @@ public class ClientService {
 //        }
 //        return clientDTOList;
 //    }
-
-
-    public ClientDTO updateClientFirstNameAndLastName(long id, ClientDTO clientDTO) {
-        ClientEntity findClient = clientRepository.findById(id)
-                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
-
-        findClient.setFirstName(clientDTO.getFirstName());
-        findClient.setLastName(clientDTO.getLastName());
-
-        ClientEntity saved = clientRepository.save(findClient);
-
-        return clientMapper.toClientDto(saved);
+//
+    public void deleteClientByID(Long id) {
+        clientRepository.findById(id).orElseThrow(() ->new ClientNotFoundException("Client not found. Cannot be deleted"));
+        clientRepository.deleteById(id);
     }
 
-    public ClientDTO activateOrDeactivateClientByID(long id, ClientDTO clientDTO) {
-        ClientEntity findClient = clientRepository.findById(id)
-                .orElseThrow(() -> new ClientNotFoundException("Client not found"));
-
-        findClient.setActivated(clientDTO.getActivated());
-        ClientEntity saved = clientRepository.save(findClient);
-
-        return clientMapper.toClientDto(saved);
-    }
 }

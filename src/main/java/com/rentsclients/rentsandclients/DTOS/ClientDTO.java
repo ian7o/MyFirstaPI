@@ -1,14 +1,9 @@
 package com.rentsclients.rentsandclients.DTOS;
 
-import com.rentsclients.rentsandclients.DTOS.CarDTO;
-import com.rentsclients.rentsandclients.Entity.CarEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Builder
 @Getter
