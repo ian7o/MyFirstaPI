@@ -1,13 +1,18 @@
 package com.rentsclients.rentsandclients.service;
 
 import com.rentsclients.rentsandclients.DTOS.CarDTO;
+import com.rentsclients.rentsandclients.DTOS.ClientDTO;
 import com.rentsclients.rentsandclients.Entity.CarEntity;
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
+import com.rentsclients.rentsandclients.Exceptions.CarNotFoundException;
 import com.rentsclients.rentsandclients.Exceptions.ClientNotFoundException;
+import com.rentsclients.rentsandclients.Exceptions.DuplicateCarPlateException;
+import com.rentsclients.rentsandclients.Mapper.CarMapper;
 import com.rentsclients.rentsandclients.Repository.CarRepository;
 import com.rentsclients.rentsandclients.Repository.ClientRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,7 +26,7 @@ public class CarService {
         this.clientRepository = clientRepository;
     }
 
-    public CarDTO createACar(CarDTO carDTO) {
+    public void createACar(CarDTO carDTO) {
         if (carDTO == null) {
             throw new IllegalArgumentException("CarDTO cannot be null");
         }
@@ -34,23 +39,15 @@ public class CarService {
         converterInEntity.setActivated(carDTO.isActivated());
 
         if (carRepository.existsByPlate(converterInEntity.getPlate())) {
-            throw new RuntimeException("The plate is already registered");
+            throw new DuplicateCarPlateException("The plate is already registered");
         }
 
-        CarEntity carSaved = carRepository.save(converterInEntity);
+        carRepository.save(converterInEntity);
 
-        return new CarDTO(
-                carSaved.getCarid(),
-                carSaved.getBrand(),
-                carSaved.getModel(),
-                carSaved.getPlate(),
-                carSaved.isActivated(),
-                null
-        );
     }
 
     public CarDTO updateCarByID(Long id, CarDTO carDTO) {
-        CarEntity findCar = carRepository.findById(id).orElseThrow(() -> new RuntimeException("CarID not found"));
+        CarEntity findCar = carRepository.findById(id).orElseThrow(() -> new CarNotFoundException("CarID not found"));
 
         findCar.setBrand(carDTO.getBrand());
         findCar.setModel(carDTO.getModel());
@@ -58,7 +55,7 @@ public class CarService {
         findCar.setActivated(carDTO.isActivated());
 
         if (carRepository.existsByPlate(findCar.getPlate())) {
-            throw new RuntimeException("The plate is already registered ");
+            throw new DuplicateCarPlateException("The plate is already registered ");
         }
 
         CarEntity savedCar = carRepository.save(findCar);
@@ -74,7 +71,7 @@ public class CarService {
     }
 
     public void activateOrDeactivateCarByID(long id, CarDTO carDTO) {
-        CarEntity findCar = carRepository.findById(id).orElseThrow(() -> new RuntimeException("ID not found. The car will not be updated"));
+        CarEntity findCar = carRepository.findById(id).orElseThrow(() -> new CarNotFoundException("ID not found. The car will not be updated"));
 
         findCar.setActivated(carDTO.isActivated());
         carRepository.save(findCar);
@@ -82,7 +79,7 @@ public class CarService {
 
 
     public void associateCarWithClient(long carId, Long userId) {
-        CarEntity findCar = carRepository.findById(carId).orElseThrow(() -> new RuntimeException("ID not found. The car will not be updated"));
+        CarEntity findCar = carRepository.findById(carId).orElseThrow(() -> new CarNotFoundException("ID not found. The car will not be updated"));
 
         ClientEntity findUser = clientRepository.findById(userId).orElseThrow(() -> new ClientNotFoundException("Client not found. The car will not be updated"));
 
@@ -91,20 +88,83 @@ public class CarService {
         carRepository.save(findCar);
     }
 
+    public List<CarDTO> getDeactivatedAccountsWithActiveVehicles() {
+        List<CarEntity> findClients = carRepository.findByClientActivatedFalseAndActivatedTrue();
+        List<CarDTO> result = new ArrayList<>();
+
+//        findClients.forEach(clients -> result.add(CarMapper.INSTANCE.carEntityToCarDto(clients)));
+
+        findClients.forEach(i -> result.add(
+                new CarDTO(i.getCarid(),
+                        i.getBrand(),
+                        i.getModel(),
+                        i.getPlate(),
+                        i.isActivated(),
+                        new ClientDTO(
+                                i.getClient().getClientid(),
+                                i.getClient().getFirstName(),
+                                i.getClient().getLastName(),
+                                i.getClient().getNif(),
+                                i.getClient().isActivated()
+                        ))
+        ));
+        return result;
+    }
+
+    public List<CarDTO> getActiveVehicleLicensePlatesForDeactivatedUsers() {
+        List<CarEntity> carEntities = carRepository.findByClientActivatedFalseAndActivatedTrue();
+
+        List<CarDTO> result = new ArrayList<>();
+
+        carEntities.forEach(i -> result.add(
+                new CarDTO(
+                        null,
+                        null,
+                        null,
+                        i.getPlate(),
+                        i.isActivated(),
+                        new ClientDTO(
+                                i.getClient().getClientid(),
+                                i.getClient().getFirstName(),
+                                i.getClient().getLastName(),
+                                null,
+                                i.getClient().isActivated())
+                ))
+        );
+        return result;
+    }
+
+
     public List<CarEntity> getAllCars() {
         return carRepository.findAll();
     }
 
-//
-//    public CarDTO getASpecifiqueCarID(Long id) {
-//        return carMap.toCarDto(carRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("CarID not found")));
-//    }
+    public CarDTO getASpecifiqueCarID(Long id) {
+        CarEntity carEntity = carRepository.findById(id)
+                .orElseThrow(() -> new CarNotFoundException("CarID not found"));
+
+        ClientDTO clientDTO = new ClientDTO();
+
+        if (carEntity.getClient() != null) {
+            clientDTO.setClientid(carEntity.getClient().getClientid());
+            clientDTO.setFirstName(carEntity.getClient().getLastName());
+            clientDTO.setNif(carEntity.getClient().getNif());
+            clientDTO.setActivated(carEntity.getClient().isActivated());
+        }
+
+        return new CarDTO(
+                carEntity.getCarid(),
+                carEntity.getBrand(),
+                carEntity.getModel(),
+                carEntity.getPlate(),
+                carEntity.isActivated(),
+                clientDTO);
+    }
 
     public void deleteCarByID(Long id) {
         List<CarEntity> findCars = carRepository.findAll();
         if (findCars.isEmpty()) {
-            throw new RuntimeException("Car not found cannot be deleted");
+            throw new CarNotFoundException("Car not found cannot be deleted");
         }
         carRepository.deleteById(id);
     }

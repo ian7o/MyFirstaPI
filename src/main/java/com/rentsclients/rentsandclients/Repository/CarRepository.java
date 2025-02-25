@@ -12,4 +12,10 @@ public interface CarRepository extends JpaRepository<CarEntity, Long> {
     boolean existsByPlate(String plate);
     List<CarEntity> findByActivatedTrue();
 
+    List<CarEntity> findByClientActivatedTrue();
+
+    List<CarEntity> findByClientActivatedFalse();
+
+    List<CarEntity> findByClientActivatedFalseAndActivatedTrue();
+
 }

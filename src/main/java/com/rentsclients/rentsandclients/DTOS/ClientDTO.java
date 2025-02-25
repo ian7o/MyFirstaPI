@@ -10,17 +10,19 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ClientDTO {
-    private Long clientID;
+    private Long clientid;
     private String firstName;
     private String lastName;
     private Integer nif;
     private Boolean activated;
 
-    public ClientDTO(Long clientID, String firstName, String lastName, Integer nif, Boolean activated) {
-        this.clientID = clientID;
+    public ClientDTO(Long clientid, String firstName, String lastName, Integer nif, Boolean activated) {
+        this.clientid = clientid;
         this.firstName = firstName;
         this.lastName = lastName;
         this.nif = nif;
         this.activated = activated;
     }
+
+
 }
