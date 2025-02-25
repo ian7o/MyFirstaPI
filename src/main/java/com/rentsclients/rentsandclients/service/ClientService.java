@@ -1,13 +1,16 @@
 package com.rentsclients.rentsandclients.service;
 
 import com.rentsclients.rentsandclients.DTOS.ClientDTO;
+import com.rentsclients.rentsandclients.DTOS.ClientDtoOnlyForFirstAndLastNames;
 import com.rentsclients.rentsandclients.Exceptions.ClientNotFoundException;
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
+import com.rentsclients.rentsandclients.Exceptions.DuplicateClientNifException;
 import com.rentsclients.rentsandclients.Repository.ClientRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,8 +19,7 @@ public class ClientService {
     @Autowired
     ClientRepository clientRepository;
 
-    public ClientDTO createAClient(ClientDTO clientDTO) {
-
+    public void createAClient(ClientDTO clientDTO) {
         ClientEntity converterInEntity = new ClientEntity(
                 null,
                 clientDTO.getFirstName(),
@@ -27,44 +29,30 @@ public class ClientService {
         );
 
         if (clientRepository.existsByNif(converterInEntity.getNif())) {
-            throw new ClientNotFoundException("A client with this nif already exists.");
+            throw new DuplicateClientNifException("A client with this nif already exists.");
         }
 
-        ClientEntity clientEntity = clientRepository.save(converterInEntity);
-        return new ClientDTO(
-                clientEntity.getClientid(),
-                clientDTO.getFirstName(),
-                clientDTO.getLastName(),
-                clientDTO.getNif(),
-                clientDTO.getActivated());
+        clientRepository.save(converterInEntity);
     }
 
-    public void updateClientByID(long id, ClientDTO clientDTO) {
-       ClientEntity clientEntity = clientRepository.findById(id)
+    public void updateClient(long id, ClientDTO clientDTO) {
+        ClientEntity converterInEntity = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
-       clientEntity.setClientid(id);
-       clientEntity.setFirstName(clientDTO.getFirstName());
-       clientEntity.setLastName(clientDTO.getLastName());
-       clientEntity.setNif(clientEntity.getNif());
-       clientEntity.setActivated(clientDTO.getActivated());
-
-        clientRepository.save(clientEntity);
+        converterInEntity.setFirstName(clientDTO.getFirstName());
+        converterInEntity.setLastName(clientDTO.getLastName());
+        converterInEntity.setNif(clientDTO.getNif());
+        converterInEntity.setActivated(clientDTO.getActivated());
 
 
-//        ClientEntity saved = clientRepository.save(converterInClient);
+        if (clientRepository.existsByNif(converterInEntity.getNif())) {
+            throw new DuplicateClientNifException("A client with this nif already exists.");
+        }
 
-//        return new ClientDTO(
-//                saved.getClientid(),
-//                saved.getFirstName(),
-//                saved.getLastName(),
-//                saved.getNif(),
-//                saved.isActivated()
-//        );
+        clientRepository.save(converterInEntity);
     }
 
-    //
-    public void updateClientFirstNameAndLastName(long id, ClientDTO clientDTO) {
+    public void updateClientFirstAndLastName(long id, ClientDTO clientDTO) {
         ClientEntity findClient = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
@@ -74,7 +62,6 @@ public class ClientService {
         clientRepository.save(findClient);
     }
 
-    //
     public void activateOrDeactivateClientByID(long id, ClientDTO clientDTO) {
         ClientEntity findClient = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
@@ -85,13 +72,39 @@ public class ClientService {
 
     }
 
-    //
-//
-    public List<ClientEntity> getAllClients(ClientEntity client) {
-        return clientRepository.findAll();
+    public List<ClientDtoOnlyForFirstAndLastNames> getDeactivatedAccounts() {
+        List<ClientEntity> clients = clientRepository.findByActivatedFalse();
+        List<ClientDtoOnlyForFirstAndLastNames> clientDtoOnlyForFirstAndLastNamesList = new ArrayList<>();
+
+        clients.forEach(client -> clientDtoOnlyForFirstAndLastNamesList.add((
+                new ClientDtoOnlyForFirstAndLastNames(
+                        client.getFirstName(),
+                        client.getLastName()
+                )
+        )));
+
+        if (clientDtoOnlyForFirstAndLastNamesList.isEmpty()) {
+            throw new RuntimeException("Nothing to show");
+        }
+        return clientDtoOnlyForFirstAndLastNamesList;
     }
 
-    //
+    public List<ClientDTO> getAllClients() {
+        List<ClientEntity> clientEntity = clientRepository.findAll();
+
+        List<ClientDTO> clientDTOList = new ArrayList<>();
+
+        clientEntity.forEach(client -> clientDTOList.add((new ClientDTO(
+                client.getClientid(),
+                client.getFirstName(),
+                client.getLastName(),
+                client.getNif(),
+                client.isActivated()
+        ))));
+
+        return clientDTOList;
+    }
+
     public ClientDTO getASpecificClientByID(Long id) {
         ClientEntity clientEntity = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
@@ -105,33 +118,10 @@ public class ClientService {
         );
     }
 
-    //
-//
-//
-//
-//    public List<ClientDTO> getActivatedAccounts() {
-//        List<ClientEntity> clients = clientRepository.findByActivatedFalse();
-//        List<ClientDTO> clientDTOList = new ArrayList<>();
-//
-//        clients.forEach(client -> clientDTOList.add((
-//                new ClientDTO(
-//                     null,
-//                        client.getFirstName(),
-//                        client.getLastName(),
-//                     null,
-//                     null,
-//                        null
-//                )
-//                )));
-//
-//        if (clientDTOList.isEmpty()){
-//            throw new RuntimeException("Nothing to show");
-//        }
-//        return clientDTOList;
-//    }
-//
+
+
     public void deleteClientByID(Long id) {
-        clientRepository.findById(id).orElseThrow(() ->new ClientNotFoundException("Client not found. Cannot be deleted"));
+        clientRepository.findById(id).orElseThrow(() -> new ClientNotFoundException("Client not found. Cannot be deleted"));
         clientRepository.deleteById(id);
     }
 
