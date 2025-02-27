@@ -1,13 +1,13 @@
 package com.rentsclients.rentsandclients.service;
 
 import com.rentsclients.rentsandclients.DTOS.CarDTO;
+import com.rentsclients.rentsandclients.DTOS.CarPlateActivatedDto;
 import com.rentsclients.rentsandclients.DTOS.ClientDTO;
 import com.rentsclients.rentsandclients.Entity.CarEntity;
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
 import com.rentsclients.rentsandclients.Exceptions.CarNotFoundException;
 import com.rentsclients.rentsandclients.Exceptions.ClientNotFoundException;
 import com.rentsclients.rentsandclients.Exceptions.DuplicateCarPlateException;
-import com.rentsclients.rentsandclients.Mapper.CarMapper;
 import com.rentsclients.rentsandclients.Repository.CarRepository;
 import com.rentsclients.rentsandclients.Repository.ClientRepository;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,6 @@ public class CarService {
         }
 
         CarEntity converterInEntity = new CarEntity();
-        converterInEntity.setCarid(carDTO.getCarid());
         converterInEntity.setBrand(carDTO.getBrand());
         converterInEntity.setModel(carDTO.getModel());
         converterInEntity.setPlate(carDTO.getPlate());
@@ -61,7 +60,6 @@ public class CarService {
         CarEntity savedCar = carRepository.save(findCar);
 
         return new CarDTO(
-                savedCar.getCarid(),
                 savedCar.getBrand(),
                 savedCar.getModel(),
                 savedCar.getPlate(),
@@ -95,13 +93,12 @@ public class CarService {
 //        findClients.forEach(clients -> result.add(CarMapper.INSTANCE.carEntityToCarDto(clients)));
 
         findClients.forEach(i -> result.add(
-                new CarDTO(i.getCarid(),
+                new CarDTO(
                         i.getBrand(),
                         i.getModel(),
                         i.getPlate(),
                         i.isActivated(),
                         new ClientDTO(
-                                i.getClient().getClientid(),
                                 i.getClient().getFirstName(),
                                 i.getClient().getLastName(),
                                 i.getClient().getNif(),
@@ -111,23 +108,19 @@ public class CarService {
         return result;
     }
 
-    public List<CarDTO> getActiveVehicleLicensePlatesForDeactivatedUsers() {
+    public List<CarPlateActivatedDto> getActiveVehicleLicensePlatesForDeactivatedUsers() {
         List<CarEntity> carEntities = carRepository.findByClientActivatedFalseAndActivatedTrue();
 
-        List<CarDTO> result = new ArrayList<>();
+        List<CarPlateActivatedDto> result = new ArrayList<>();
 
         carEntities.forEach(i -> result.add(
-                new CarDTO(
-                        null,
-                        null,
-                        null,
+                new CarPlateActivatedDto(
                         i.getPlate(),
                         i.isActivated(),
                         new ClientDTO(
-                                i.getClient().getClientid(),
                                 i.getClient().getFirstName(),
                                 i.getClient().getLastName(),
-                                null,
+                                i.getClient().getNif(),
                                 i.getClient().isActivated())
                 ))
         );
@@ -139,21 +132,19 @@ public class CarService {
         return carRepository.findAll();
     }
 
-    public CarDTO getASpecifiqueCarID(Long id) {
+    public CarDTO getCarByID(Long id) {
         CarEntity carEntity = carRepository.findById(id)
                 .orElseThrow(() -> new CarNotFoundException("CarID not found"));
 
         ClientDTO clientDTO = new ClientDTO();
 
         if (carEntity.getClient() != null) {
-            clientDTO.setClientid(carEntity.getClient().getClientid());
             clientDTO.setFirstName(carEntity.getClient().getLastName());
             clientDTO.setNif(carEntity.getClient().getNif());
             clientDTO.setActivated(carEntity.getClient().isActivated());
         }
 
         return new CarDTO(
-                carEntity.getCarid(),
                 carEntity.getBrand(),
                 carEntity.getModel(),
                 carEntity.getPlate(),

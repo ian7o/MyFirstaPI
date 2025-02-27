@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class ClientService {
@@ -19,17 +21,34 @@ public class ClientService {
     @Autowired
     ClientRepository clientRepository;
 
+//    public boolean checkIfNumberIsOnlyNumber() {
+//        String regex = "^\\+?[0-9]*$";
+//        boolean numberHasFound = false;
+//        Pattern pattern = Pattern.compile(regex);
+//        int intao = 1234;
+//        String intaoToString = Integer.toString(intao);
+//        Matcher matcher = pattern.matcher(intaoToString);
+//
+//        if (matcher.hasMatch()) {
+//            numberHasFound = true;
+//            throw new RuntimeException("The Nif has letter");
+//        }
+//
+//        return numberHasFound;
+//    }
+
     public void createAClient(ClientDTO clientDTO) {
         ClientEntity converterInEntity = new ClientEntity(
                 null,
                 clientDTO.getFirstName(),
                 clientDTO.getLastName(),
                 clientDTO.getNif(),
-                clientDTO.getActivated()
+                clientDTO.isActivated()
         );
-
-        if (clientRepository.existsByNif(converterInEntity.getNif())) {
-            throw new DuplicateClientNifException("A client with this nif already exists.");
+//        if (checkIfNumberIsOnlyNumber()){
+            if (clientRepository.existsByNif(converterInEntity.getNif())) {
+                throw new DuplicateClientNifException("A client with this nif already exists.");
+//            }
         }
 
         clientRepository.save(converterInEntity);
@@ -42,8 +61,7 @@ public class ClientService {
         converterInEntity.setFirstName(clientDTO.getFirstName());
         converterInEntity.setLastName(clientDTO.getLastName());
         converterInEntity.setNif(clientDTO.getNif());
-        converterInEntity.setActivated(clientDTO.getActivated());
-
+        converterInEntity.setActivated(clientDTO.isActivated());
 
         if (clientRepository.existsByNif(converterInEntity.getNif())) {
             throw new DuplicateClientNifException("A client with this nif already exists.");
@@ -66,7 +84,7 @@ public class ClientService {
         ClientEntity findClient = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
-        findClient.setActivated(clientDTO.getActivated());
+        findClient.setActivated(clientDTO.isActivated());
 
         clientRepository.save(findClient);
 
@@ -95,7 +113,6 @@ public class ClientService {
         List<ClientDTO> clientDTOList = new ArrayList<>();
 
         clientEntity.forEach(client -> clientDTOList.add((new ClientDTO(
-                client.getClientid(),
                 client.getFirstName(),
                 client.getLastName(),
                 client.getNif(),
@@ -110,14 +127,12 @@ public class ClientService {
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
         return new ClientDTO(
-                clientEntity.getClientid(),
                 clientEntity.getFirstName(),
                 clientEntity.getLastName(),
                 clientEntity.getNif(),
                 clientEntity.isActivated()
         );
     }
-
 
 
     public void deleteClientByID(Long id) {

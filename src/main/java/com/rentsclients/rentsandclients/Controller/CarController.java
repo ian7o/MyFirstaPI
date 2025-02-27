@@ -1,7 +1,9 @@
 package com.rentsclients.rentsandclients.Controller;
 
 import com.rentsclients.rentsandclients.DTOS.CarDTO;
+import com.rentsclients.rentsandclients.DTOS.CarPlateActivatedDto;
 import com.rentsclients.rentsandclients.Entity.CarEntity;
+import com.rentsclients.rentsandclients.Exceptions.ClientNotFoundException;
 import com.rentsclients.rentsandclients.service.CarService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,7 +78,7 @@ public class CarController {
     @GetMapping("/activePlateForDeactivateUsers")
     public ResponseEntity<?> getActivePlateForDeactivatedUsers() {
         try {
-            List<CarDTO> result = carService.getActiveVehicleLicensePlatesForDeactivatedUsers();
+            List<CarPlateActivatedDto> result = carService.getActiveVehicleLicensePlatesForDeactivatedUsers();
             return ResponseEntity.ok().body(result);
         } catch (Exception e) {
             System.out.println("Error in getActiveVehicleLicensePlatesForDeactivatedUsers " + e.getMessage());
@@ -99,7 +101,7 @@ public class CarController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getCarById(@PathVariable("id") Long id) {
         try {
-            CarDTO result = carService.getASpecifiqueCarID(id);
+            CarDTO result = carService.getCarByID(id);
             return ResponseEntity.status(HttpStatus.FOUND).body(result);
         } catch (Exception e) {
             System.out.println("Error in getCarById: " + e.getMessage());
