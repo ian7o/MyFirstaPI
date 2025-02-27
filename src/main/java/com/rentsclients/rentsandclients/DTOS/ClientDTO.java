@@ -2,16 +2,14 @@ package com.rentsclients.rentsandclients.DTOS;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 
 @Builder
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ClientDTO {
     @Column(nullable = false)
     @Size(min = 3, max = 50, message = "The client first name do not approved")

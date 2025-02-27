@@ -7,7 +7,6 @@ import com.rentsclients.rentsandclients.Entity.ClientEntity;
 import com.rentsclients.rentsandclients.Exceptions.DuplicateClientNifException;
 import com.rentsclients.rentsandclients.Repository.ClientRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,8 +17,11 @@ import java.util.regex.Pattern;
 @Service
 public class ClientService {
 
-    @Autowired
-    ClientRepository clientRepository;
+    private  ClientRepository clientRepository;
+
+    public ClientService(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
+    }
 
 //    public boolean checkIfNumberIsOnlyNumber() {
 //        String regex = "^\\+?[0-9]*$";
@@ -127,6 +129,7 @@ public class ClientService {
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
         return new ClientDTO(
+
                 clientEntity.getFirstName(),
                 clientEntity.getLastName(),
                 clientEntity.getNif(),
