@@ -1,5 +1,6 @@
 package com.rentsclients.rentsandclients.DTOS;
 
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,27 +9,23 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CarDTO {
-    private Long carID;
+    @Size(min = 3, max = 50)
     private String brand;
+    @Size(min = 3, max = 50)
     private String model;
+    @Size(min = 3, max = 50)
     private String plate;
     private boolean activated;
+    private ClientDTO client;
 
     public CarDTO() {
     }
 
-    public CarDTO(Long carID, String brand, String model, String plate, boolean activated) {
-        this.carID = carID;
+    public CarDTO(String brand, String model, String plate, boolean activated, ClientDTO client) {
         this.brand = brand;
         this.model = model;
         this.plate = plate;
         this.activated = activated;
-    }
-
-    public CarDTO(Long carID, String brand, String model, String plate) {
-        this.carID = carID;
-        this.brand = brand;
-        this.model = model;
-        this.plate = plate;
+        this.client = client;
     }
 }

@@ -1,24 +1,37 @@
 package com.rentsclients.rentsandclients.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Car")
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "car")
 @Setter
 @Getter
 public class CarEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long carID;
+    private Long carid;
     private String brand;
     private String model;
     @Column(unique = true, nullable = false)
     private String plate;
     private boolean activated;
+
+    @ManyToOne
+    @JoinColumn( name = "client_id")
+    private ClientEntity client;
+
+    public CarEntity() {
+    }
+
+    public CarEntity(Long carid, String brand, String model, String plate, boolean activated, ClientEntity client) {
+        this.carid = carid;
+        this.brand = brand;
+        this.model = model;
+        this.plate = plate;
+        this.activated = activated;
+        this.client = client;
+    }
 }
