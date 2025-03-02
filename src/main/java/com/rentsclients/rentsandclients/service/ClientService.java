@@ -11,7 +11,6 @@ import com.rentsclients.rentsandclients.Exceptions.DuplicateClientNifException;
 import com.rentsclients.rentsandclients.Mapper.ClientMapper;
 import com.rentsclients.rentsandclients.Repository.ClientRepository;
 
-
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

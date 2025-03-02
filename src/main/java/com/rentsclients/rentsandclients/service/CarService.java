@@ -1,13 +1,13 @@
 package com.rentsclients.rentsandclients.service;
 
 import com.rentsclients.rentsandclients.DTOS.CarDTO;
+import com.rentsclients.rentsandclients.DTOS.CarDtoOnlyForActivated;
 import com.rentsclients.rentsandclients.DTOS.CarPlateActivatedDto;
 import com.rentsclients.rentsandclients.Entity.CarEntity;
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
-import com.rentsclients.rentsandclients.Exceptions.CarNotFoundException;
-import com.rentsclients.rentsandclients.Exceptions.ClientNotFoundException;
-import com.rentsclients.rentsandclients.Exceptions.DuplicateCarPlateException;
+import com.rentsclients.rentsandclients.Exceptions.*;
 import com.rentsclients.rentsandclients.Mapper.CarMapper;
+import com.rentsclients.rentsandclients.Mapper.ClientMapper;
 import com.rentsclients.rentsandclients.Repository.CarRepository;
 import com.rentsclients.rentsandclients.Repository.ClientRepository;
 import org.springframework.stereotype.Service;
@@ -21,18 +21,32 @@ public class CarService {
 
     private final ClientRepository clientRepository;
 
+    private final CarMapper carMapper;
 
-    public CarService(CarRepository carRepository, ClientRepository clientRepository) {
+    public void validateInfosSize(String brand, String model, String plate) {
+        if (brand.strip().replace(" ", "").length() < 3 || brand.strip().length() > 50) {
+            throw new CarBrandException("The car first brand size do not approved");
+        }
+        if (model.strip().replace(" ", "").length() < 3 || model.strip().length() > 50) {
+            throw new CarModelException("The car model size do not approved");
+        }
+
+        if (plate.strip().replace(" ", "").length() < 7 || plate.strip().length() > 8){
+            throw new CarPlateException("The car plate size do not approved");
+        }
+    }
+
+
+    public CarService(CarRepository carRepository, ClientRepository clientRepository, CarMapper carMapper) {
         this.carRepository = carRepository;
         this.clientRepository = clientRepository;
+        this.carMapper = carMapper;
     }
 
     public void createACar(CarDTO carDTO) {
-        if (carDTO == null) {
-            throw new IllegalArgumentException("CarDTO cannot be null");
-        }
+        validateInfosSize(carDTO.getBrand(), carDTO.getModel(), carDTO.getPlate());
 
-        CarEntity converterInEntity = CarMapper.Instance.carDtoToCar(carDTO);
+        CarEntity converterInEntity = carMapper.carDtoToCar(carDTO);
         if (carRepository.existsByPlate(converterInEntity.getPlate())) {
             throw new DuplicateCarPlateException("The plate is already registered");
         }
@@ -40,30 +54,22 @@ public class CarService {
         carRepository.save(converterInEntity);
     }
 
-    public CarDTO updateCarByID(Long id, CarDTO carDTO) {
+    public void updateCarByID(Long id, CarDTO carDTO) {
+        validateInfosSize(carDTO.getBrand(), carDTO.getModel(), carDTO.getPlate());
+
         CarEntity findCar = carRepository.findById(id).orElseThrow(() -> new CarNotFoundException("CarID not found"));
-        ClientEntity clientEntity = new ClientEntity();
-
-        findCar.setBrand(carDTO.getBrand());
-        findCar.setModel(carDTO.getModel());
-        findCar.setPlate(carDTO.getPlate());
-        findCar.setActivated(carDTO.isActivated());
-        findCar.setClient(clientEntity);
-
+        carMapper.updateCarEntityFromCarDTO(carDTO, findCar);
 
         if (carRepository.existsByPlate(findCar.getPlate())) {
             throw new DuplicateCarPlateException("The plate is already registered ");
         }
-
-        CarEntity savedCar = carRepository.save(findCar);
-
-        return CarMapper.Instance.carToCarDto(savedCar);
+        carRepository.save(findCar);
     }
 
-    public void activateOrDeactivateCarByID(long id, CarDTO carDTO) {
+    public void activateOrDeactivateCarByID(long id, CarDtoOnlyForActivated carDTO) {
         CarEntity findCar = carRepository.findById(id).orElseThrow(() -> new CarNotFoundException("ID not found. The car will not be updated"));
 
-        findCar.setActivated(carDTO.isActivated());
+        carMapper.updateCarEntityFromCarDtoOnlyForActivated(carDTO, findCar);
         carRepository.save(findCar);
     }
 
@@ -82,7 +88,7 @@ public class CarService {
         List<CarDTO> result = new ArrayList<>();
 
         for (CarEntity car : carEntities){
-            CarDTO carDTO = CarMapper.Instance.carToCarDto(car);
+            CarDTO carDTO = carMapper.carToCarDto(car);
             result.add(carDTO);
         }
         return result;
@@ -93,7 +99,7 @@ public class CarService {
         List<CarPlateActivatedDto> result = new ArrayList<>();
 
         for (CarEntity carEntity : carEntities) {
-            CarPlateActivatedDto dto = CarMapper.Instance.carEntityToCarPlateActivatedDto(carEntity);
+            CarPlateActivatedDto dto = carMapper.carEntityToCarPlateActivatedDto(carEntity);
 
             result.add(dto);
         }
@@ -109,7 +115,7 @@ public class CarService {
         CarEntity carEntity = carRepository.findById(id)
                 .orElseThrow(() -> new CarNotFoundException("CarID not found"));
 
-        return CarMapper.Instance.carToCarDto(carEntity);
+        return carMapper.carToCarDto(carEntity);
     }
 
     public void deleteCarByID(Long id) {

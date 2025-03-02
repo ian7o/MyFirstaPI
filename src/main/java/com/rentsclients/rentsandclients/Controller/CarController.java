@@ -1,11 +1,14 @@
 package com.rentsclients.rentsandclients.Controller;
 
 import com.rentsclients.rentsandclients.DTOS.CarDTO;
+import com.rentsclients.rentsandclients.DTOS.CarDtoOnlyForActivated;
 import com.rentsclients.rentsandclients.DTOS.CarPlateActivatedDto;
 import com.rentsclients.rentsandclients.Entity.CarEntity;
 import com.rentsclients.rentsandclients.service.CarService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,8 +24,11 @@ public class CarController {
 
 
     @PostMapping
-    public ResponseEntity<?> createACar(@RequestBody CarDTO carDTO) {
+    public ResponseEntity<?> createACar(@Valid @RequestBody CarDTO carDTO, BindingResult bindingResult) {
         try {
+            if (bindingResult.hasErrors()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getFieldError().getDefaultMessage() + " In: " + bindingResult.getFieldError().getRejectedValue());
+            }
             carService.createACar(carDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body("Car created");
         } catch (RuntimeException e) {
@@ -30,9 +36,12 @@ public class CarController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateCarByID(@PathVariable("id") Long id, @RequestBody CarDTO carDTO) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateCarByID(@PathVariable("id") Long id, @Valid @RequestBody CarDTO carDTO, BindingResult bindingResult) {
         try {
+            if (bindingResult.hasErrors()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getFieldError().getDefaultMessage() + " In: " + bindingResult.getFieldError().getRejectedValue());
+            }
             carService.updateCarByID(id, carDTO);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Car updated");
         } catch (RuntimeException e) {
@@ -41,18 +50,21 @@ public class CarController {
         }
     }
 
-    @PutMapping("/{id}/activeOrDeactivateCar")
-    public ResponseEntity<?> activeOrDesativeCarrByID(@PathVariable("id") long id, @RequestBody CarDTO carDTO) {
+    @PatchMapping("/{id}/activeOrDeactivateCar")
+    public ResponseEntity<?> activeOrDeactivateCarByID(@PathVariable("id") long id, @RequestBody CarDtoOnlyForActivated carDtoOnlyForActivated, BindingResult bindingResult) {
         try {
-            carService.activateOrDeactivateCarByID(id, carDTO);
+            if (bindingResult.hasErrors()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getFieldError().getDefaultMessage() + " In: " + bindingResult.getFieldError().getRejectedValue());
+            }
+            carService.activateOrDeactivateCarByID(id, carDtoOnlyForActivated);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Car updated");
         } catch (Exception e) {
-            System.out.println("Error in activeOrDesativeCarrByID: " + e.getMessage());
+            System.out.println("Error in activeOrDeactivateCarByID: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
         }
     }
 
-    @PutMapping("/associate/{carId}/client/{clientId}")
+    @PatchMapping("/associate/{carId}/client/{clientId}")
     public ResponseEntity<?> associateCarWithClient(@PathVariable("carId") Long carID, @PathVariable("clientId") Long clientId) {
         try {
             carService.associateCarWithClient(carID, clientId);

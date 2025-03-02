@@ -10,7 +10,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CarDTO {
+public class CarDTOWithoutClient {
     @NotNull(message = "The car brand is empty")
     @NotBlank(message = "The car brand is empty")
     @Size(min = 3, max = 50, message = "The car brand size do not approved")
@@ -26,8 +26,6 @@ public class CarDTO {
     @NotBlank(message = "The car plate is empty")
     @Size(min = 7, max = 8, message = "The car plate size do not approved")
     private String plate;
-    
-    private boolean activated;
 
-    private ClientDTO client;
+    private boolean activated;
 }
