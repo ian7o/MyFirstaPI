@@ -1,126 +1,103 @@
 package com.rentsclients.rentsandclients.service;
 
 import com.rentsclients.rentsandclients.DTOS.ClientDTO;
+import com.rentsclients.rentsandclients.DTOS.ClientDtoOnlyForActivated;
 import com.rentsclients.rentsandclients.DTOS.ClientDtoOnlyForFirstAndLastNames;
+import com.rentsclients.rentsandclients.Exceptions.ClientFirstNameException;
+import com.rentsclients.rentsandclients.Exceptions.ClientLastNameException;
 import com.rentsclients.rentsandclients.Exceptions.ClientNotFoundException;
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
 import com.rentsclients.rentsandclients.Exceptions.DuplicateClientNifException;
+import com.rentsclients.rentsandclients.Mapper.ClientMapper;
 import com.rentsclients.rentsandclients.Repository.ClientRepository;
+
 
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class ClientService {
+    private ClientRepository clientRepository;
+    private final ClientMapper clientMapper;
 
-    private  ClientRepository clientRepository;
-
-    public ClientService(ClientRepository clientRepository) {
+    public ClientService(ClientRepository clientRepository, ClientMapper clientMapper) {
         this.clientRepository = clientRepository;
+        this.clientMapper = clientMapper;
     }
 
-//    public boolean checkIfNumberIsOnlyNumber() {
-//        String regex = "^\\+?[0-9]*$";
-//        boolean numberHasFound = false;
-//        Pattern pattern = Pattern.compile(regex);
-//        int intao = 1234;
-//        String intaoToString = Integer.toString(intao);
-//        Matcher matcher = pattern.matcher(intaoToString);
-//
-//        if (matcher.hasMatch()) {
-//            numberHasFound = true;
-//            throw new RuntimeException("The Nif has letter");
-//        }
-//
-//        return numberHasFound;
-//    }
+    public void validateNamesSize(String firstName, String lastName) {
+        if (firstName.strip().replace(" ", "").length() < 3) {
+            throw new ClientFirstNameException("The client first name size do not approved");
+        }
+        if (lastName.strip().replace(" ", "").length() < 3) {
+            throw new ClientLastNameException("The client last name size do not approved");
+        }
+    }
 
     public void createAClient(ClientDTO clientDTO) {
-        ClientEntity converterInEntity = new ClientEntity(
-                null,
-                clientDTO.getFirstName(),
-                clientDTO.getLastName(),
-                clientDTO.getNif(),
-                clientDTO.isActivated()
-        );
-//        if (checkIfNumberIsOnlyNumber()){
-            if (clientRepository.existsByNif(converterInEntity.getNif())) {
-                throw new DuplicateClientNifException("A client with this nif already exists.");
-//            }
-        }
+        validateNamesSize(clientDTO.getFirstName(), clientDTO.getLastName());
 
+        ClientEntity converterInEntity = clientMapper.clientDtoToClientEntity(clientDTO);
+
+        if (clientRepository.existsByNif(converterInEntity.getNif())) {
+
+            throw new DuplicateClientNifException("A client with this nif already exists.");
+        }
         clientRepository.save(converterInEntity);
     }
 
     public void updateClient(long id, ClientDTO clientDTO) {
+        validateNamesSize(clientDTO.getFirstName(), clientDTO.getLastName());
+
         ClientEntity converterInEntity = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
-        converterInEntity.setFirstName(clientDTO.getFirstName());
-        converterInEntity.setLastName(clientDTO.getLastName());
-        converterInEntity.setNif(clientDTO.getNif());
-        converterInEntity.setActivated(clientDTO.isActivated());
+        clientMapper.updateClientEntityFromClientDto(clientDTO, converterInEntity);
 
-        if (clientRepository.existsByNif(converterInEntity.getNif())) {
+        if (clientRepository.existsByNifAndClientidNot(converterInEntity.getNif(), id)) {
             throw new DuplicateClientNifException("A client with this nif already exists.");
         }
-
         clientRepository.save(converterInEntity);
     }
 
-    public void updateClientFirstAndLastName(long id, ClientDTO clientDTO) {
+
+    public void updateClientFirstAndLastName(long id, ClientDtoOnlyForFirstAndLastNames clientDTO) {
+        validateNamesSize(clientDTO.getFirstName(), clientDTO.getLastName());
+
         ClientEntity findClient = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
-        findClient.setFirstName(clientDTO.getFirstName());
-        findClient.setLastName(clientDTO.getLastName());
-
+        clientMapper.updateClientEntityFromClientDtoOnlyForFirstAndLastNames(clientDTO, findClient);
         clientRepository.save(findClient);
     }
 
-    public void activateOrDeactivateClientByID(long id, ClientDTO clientDTO) {
+    public void activateOrDeactivateClientByID(long id, ClientDtoOnlyForActivated clientDTO) {
         ClientEntity findClient = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
-        findClient.setActivated(clientDTO.isActivated());
-
+        clientMapper.updateClientEntityFromClientDtoOnlyForActivated(clientDTO, findClient);
         clientRepository.save(findClient);
-
     }
 
     public List<ClientDtoOnlyForFirstAndLastNames> getDeactivatedAccounts() {
         List<ClientEntity> clients = clientRepository.findByActivatedFalse();
         List<ClientDtoOnlyForFirstAndLastNames> clientDtoOnlyForFirstAndLastNamesList = new ArrayList<>();
 
-        clients.forEach(client -> clientDtoOnlyForFirstAndLastNamesList.add((
-                new ClientDtoOnlyForFirstAndLastNames(
-                        client.getFirstName(),
-                        client.getLastName()
-                )
-        )));
+        clients.forEach(client -> clientDtoOnlyForFirstAndLastNamesList.add(clientMapper.ClientEntityToClientDtoOnlyForFirstAndLastNames(client)));
 
         if (clientDtoOnlyForFirstAndLastNamesList.isEmpty()) {
-            throw new RuntimeException("Nothing to show");
+            throw new ClientNotFoundException("Nothing to show");
         }
         return clientDtoOnlyForFirstAndLastNamesList;
     }
 
     public List<ClientDTO> getAllClients() {
         List<ClientEntity> clientEntity = clientRepository.findAll();
-
         List<ClientDTO> clientDTOList = new ArrayList<>();
 
-        clientEntity.forEach(client -> clientDTOList.add((new ClientDTO(
-                client.getFirstName(),
-                client.getLastName(),
-                client.getNif(),
-                client.isActivated()
-        ))));
-
+        clientEntity.forEach(client -> clientDTOList.add(clientMapper.ClientEntityToClientDto(client)));
         return clientDTOList;
     }
 
@@ -128,19 +105,11 @@ public class ClientService {
         ClientEntity clientEntity = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException("Client not found"));
 
-        return new ClientDTO(
-
-                clientEntity.getFirstName(),
-                clientEntity.getLastName(),
-                clientEntity.getNif(),
-                clientEntity.isActivated()
-        );
+        return clientMapper.ClientEntityToClientDto(clientEntity);
     }
-
 
     public void deleteClientByID(Long id) {
         clientRepository.findById(id).orElseThrow(() -> new ClientNotFoundException("Client not found. Cannot be deleted"));
         clientRepository.deleteById(id);
     }
-
 }

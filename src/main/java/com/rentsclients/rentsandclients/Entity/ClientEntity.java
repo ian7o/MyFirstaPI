@@ -18,18 +18,16 @@ public class ClientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long clientid;
+
     @Column(nullable = false)
-    @Size(min = 3, max = 50, message = "The client first name do not approved")
-    @NotBlank(message = "The client firstName is empty")
     private String firstName;
+
     @Column(nullable = false)
-    @NotBlank(message = "The client lastName is empty")
-    @Size(min = 3, max = 50, message = "The client last name do not approved")
     private String lastName;
+
     @Column(unique = true, nullable = false)
-    @Min(value = 100000000, message = "The clientNif do not approved")
-    @Max(999999999)
     private int nif;
+
     private boolean activated;
 
     public ClientEntity() {

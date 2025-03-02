@@ -28,6 +28,33 @@ class ClientServiceTest {
     @InjectMocks
     ClientService clientService;
 
+    /*
+    POST
+     */
+
+//    @Test
+//    void createAClient_ThenReturn(){
+//
+//        ClientDTO clientDTO = new ClientDTO();
+//        clientDTO.setFirstName("cuk");
+//        clientDTO.setLastName("deCurioso");
+//        clientDTO.setNif(321345321);
+//        clientDTO.setActivated(true);
+//
+//       when(clientService.createAClient(clientDTO))
+//    }
+
+    /*
+    PUT
+     */
+
+    /*
+    GETS
+     */
+
+    /*
+    GET ALL
+     */
     @Test
     void when_GetAllStudentIsEmpty_ReturnEmpty() {
         when(clientRepository.findAll()).thenReturn(new ArrayList<>());
@@ -54,6 +81,9 @@ class ClientServiceTest {
         }
     }
 
+    /*
+    GET BY ID
+     */
     @Test
     void when_getStudentByIdAndExists_then_return() {
         ClientEntity client = new ClientEntity(1L, "zee", "aberto", 123456789, true);

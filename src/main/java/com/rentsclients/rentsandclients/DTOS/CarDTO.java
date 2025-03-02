@@ -9,11 +9,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CarDTO {
-    @Size(min = 3, max = 50)
+//    @Size(min = 3, max = 50)
     private String brand;
-    @Size(min = 3, max = 50)
+//    @Size(min = 3, max = 50)
     private String model;
-    @Size(min = 3, max = 50)
+//    @Size(min = 3, max = 50)
     private String plate;
     private boolean activated;
     private ClientDTO client;

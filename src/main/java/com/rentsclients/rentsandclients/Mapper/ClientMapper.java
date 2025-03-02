@@ -2,22 +2,33 @@ package com.rentsclients.rentsandclients.Mapper;
 
 
 import com.rentsclients.rentsandclients.DTOS.ClientDTO;
+import com.rentsclients.rentsandclients.DTOS.ClientDtoOnlyForActivated;
+import com.rentsclients.rentsandclients.DTOS.ClientDtoOnlyForFirstAndLastNames;
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface ClientMapper {
 
     ClientMapper Instance = Mappers.getMapper(ClientMapper.class);
 
-    ClientEntity clientDtoToClient(ClientDTO clientDTO);
+    ClientEntity clientDtoToClientEntity(ClientDTO clientDTO);
 
-    ClientDTO clientToClient(ClientEntity student);
+    ClientDTO ClientEntityToClientDto(ClientEntity clientEntity);
 
-    List<ClientDTO> clientToClientDto(List<ClientEntity> client);
+    ClientDtoOnlyForFirstAndLastNames ClientEntityToClientDtoOnlyForFirstAndLastNames(ClientEntity clientEntity);
+
+    void updateClientEntityFromClientDto (ClientDTO clientDTO, @MappingTarget ClientEntity clientEntity );
+
+    void updateClientEntityFromClientDtoOnlyForFirstAndLastNames(ClientDtoOnlyForFirstAndLastNames clientDtoOnlyForFirstAndLastNames, @MappingTarget ClientEntity clientEntity);
+
+    void updateClientEntityFromClientDtoOnlyForActivated(ClientDtoOnlyForActivated clientDtoOnlyForActivated, @MappingTarget ClientEntity clientEntity);
+
+    List<ClientDTO> ClientEntityToClientDto(List<ClientEntity> client);
 
     List<ClientEntity> clientDtosClient(List<ClientDTO> clientDTOS);
 }

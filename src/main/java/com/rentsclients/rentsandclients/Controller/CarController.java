@@ -3,7 +3,6 @@ package com.rentsclients.rentsandclients.Controller;
 import com.rentsclients.rentsandclients.DTOS.CarDTO;
 import com.rentsclients.rentsandclients.DTOS.CarPlateActivatedDto;
 import com.rentsclients.rentsandclients.Entity.CarEntity;
-import com.rentsclients.rentsandclients.Exceptions.ClientNotFoundException;
 import com.rentsclients.rentsandclients.service.CarService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +18,7 @@ public class CarController {
     public CarController(CarService carService) {
         this.carService = carService;
     }
+
 
     @PostMapping
     public ResponseEntity<?> createACar(@RequestBody CarDTO carDTO) {
