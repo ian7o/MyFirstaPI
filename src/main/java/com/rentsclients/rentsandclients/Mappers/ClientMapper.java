@@ -11,8 +11,10 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
+
 @Mapper(componentModel = "spring")
 public interface ClientMapper {
+
 
     ClientMapper Instance = Mappers.getMapper(ClientMapper.class);
 
