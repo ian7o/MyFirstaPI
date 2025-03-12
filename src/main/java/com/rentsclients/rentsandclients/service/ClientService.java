@@ -8,7 +8,7 @@ import com.rentsclients.rentsandclients.Exceptions.ClientLastNameException;
 import com.rentsclients.rentsandclients.Exceptions.ClientNotFoundException;
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
 import com.rentsclients.rentsandclients.Exceptions.DuplicateClientNifException;
-import com.rentsclients.rentsandclients.Mapper.ClientMapper;
+import com.rentsclients.rentsandclients.Mappers.ClientMapper;
 import com.rentsclients.rentsandclients.Repository.ClientRepository;
 
 import org.springframework.stereotype.Service;

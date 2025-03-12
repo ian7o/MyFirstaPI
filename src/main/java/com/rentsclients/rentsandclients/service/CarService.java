@@ -6,8 +6,7 @@ import com.rentsclients.rentsandclients.DTOS.CarPlateActivatedDto;
 import com.rentsclients.rentsandclients.Entity.CarEntity;
 import com.rentsclients.rentsandclients.Entity.ClientEntity;
 import com.rentsclients.rentsandclients.Exceptions.*;
-import com.rentsclients.rentsandclients.Mapper.CarMapper;
-import com.rentsclients.rentsandclients.Mapper.ClientMapper;
+import com.rentsclients.rentsandclients.Mappers.CarMapper;
 import com.rentsclients.rentsandclients.Repository.CarRepository;
 import com.rentsclients.rentsandclients.Repository.ClientRepository;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,7 @@ public class CarService {
             throw new CarModelException("The car model size do not approved");
         }
 
-        if (plate.strip().replace(" ", "").length() < 7 || plate.strip().length() > 8){
+        if (plate.strip().replace(" ", "").length() < 7 || plate.strip().length() > 8) {
             throw new CarPlateException("The car plate size do not approved");
         }
     }
@@ -77,7 +76,6 @@ public class CarService {
     public void associateCarWithClient(long carId, Long userId) {
         CarEntity findCar = carRepository.findById(carId).orElseThrow(() -> new CarNotFoundException("ID not found. The car will not be updated"));
         ClientEntity findUser = clientRepository.findById(userId).orElseThrow(() -> new ClientNotFoundException("Client not found. The car will not be updated"));
-
         findCar.setClient(findUser);
 
         carRepository.save(findCar);
@@ -87,7 +85,7 @@ public class CarService {
         List<CarEntity> carEntities = carRepository.findByClientActivatedFalseAndActivatedTrue();
         List<CarDTO> result = new ArrayList<>();
 
-        for (CarEntity car : carEntities){
+        for (CarEntity car : carEntities) {
             CarDTO carDTO = carMapper.carToCarDto(car);
             result.add(carDTO);
         }

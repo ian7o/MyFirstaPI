@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.beans.Encoder;
+
 
 @Builder
 @Getter
@@ -26,6 +28,8 @@ public class ClientDTO {
     @Min(value = 100000000, message = "The client Nif do not approved")
     @Max(value = 999999999, message = "The client Nif do not approved")
     private Integer nif;
+
+    private String password;
 
     private boolean activated;
 }

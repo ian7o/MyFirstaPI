@@ -19,4 +19,6 @@ public class ClientDtoOnlyForFirstAndLastNames {
     @NotBlank(message = "The client lastName is empty")
     @Size(min = 3, max = 50, message = "The client last name size do not approved")
     private String lastName;
+
+    private String password;
 }

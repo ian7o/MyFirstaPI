@@ -1,4 +1,4 @@
-package com.rentsclients.rentsandclients.Mapper;
+package com.rentsclients.rentsandclients.Mappers;
 
 
 import com.rentsclients.rentsandclients.DTOS.ClientDTO;
