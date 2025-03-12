@@ -11,6 +11,9 @@ import com.rentsclients.rentsandclients.Exceptions.DuplicateClientNifException;
 import com.rentsclients.rentsandclients.Mappers.ClientMapper;
 import com.rentsclients.rentsandclients.Repository.ClientRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.interceptor.LoggingCacheErrorHandler;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,8 +21,11 @@ import java.util.List;
 
 @Service
 public class ClientService {
+
     private ClientRepository clientRepository;
     private final ClientMapper clientMapper;
+    private Logger logger = LoggerFactory.getLogger(ClientService.class);
+
 
     public ClientService(ClientRepository clientRepository, ClientMapper clientMapper) {
         this.clientRepository = clientRepository;
@@ -35,15 +41,17 @@ public class ClientService {
         }
     }
 
+
     public void createAClient(ClientDTO clientDTO) {
         validateNamesSize(clientDTO.getFirstName(), clientDTO.getLastName());
-
         ClientEntity converterInEntity = clientMapper.clientDtoToClientEntity(clientDTO);
 
         if (clientRepository.existsByNif(converterInEntity.getNif())) {
-
             throw new DuplicateClientNifException("A client with this nif already exists.");
         }
+
+        logger.info("creating new client");
+
         clientRepository.save(converterInEntity);
     }
 

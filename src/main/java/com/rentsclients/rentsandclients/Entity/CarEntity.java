@@ -17,9 +17,7 @@ public class CarEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long carid;
-    @Column(unique = true, nullable = false)
     private String brand;
-    @Column(unique = true, nullable = false)
     private String model;
     @Column(unique = true, nullable = false)
     private String plate;
