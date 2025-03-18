@@ -66,6 +66,7 @@ public class ClientService {
         if (clientRepository.existsByNifAndClientidNot(converterInEntity.getNif(), id)) {
             throw new DuplicateClientNifException("A client with this nif already exists.");
         }
+
         clientRepository.save(converterInEntity);
     }
 
